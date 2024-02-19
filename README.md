@@ -1,7 +1,11 @@
-# Hitchhiking Rotations
+<h1 align="center">
+  <br>
+  Hitchhiking Rotations
+  <br>
+</h1>
 
 <h4 align="center">
-Code for ICML 2024 "Position Paper: Learning with 3D rotations, a hitchhiker’s guide to SO(3)" <a href="some_ariv_link" target="_blank">Paper</a>.</h4>
+Code for ICML 2024: <a href="some_ariv_link" target="_blank">"Position Paper: Learning with 3D rotations, a hitchhiker’s guide to SO(3)"</a>.</h4>
 
 <p align="center">
   <a href="#overview">Overview</a> •
@@ -16,12 +20,8 @@ Code for ICML 2024 "Position Paper: Learning with 3D rotations, a hitchhiker’s
 # Overview
 (repository overview)
 
-<object data="https://github.com/martius-lab/hitchhiking-rotations/blob/main/assets/docs/torus_v5.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="https://github.com/martius-lab/hitchhiking-rotations/blob/main/assets/docs/torus_v5.pdf>
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://github.com/martius-lab/hitchhiking-rotations/blob/main/assets/docs/torus_v5.pdf">Download PDF</a>.</p>
-    </embed>
-</object>
-
+![assets/docs/torus_v5.pdf](assets/docs/torus_v5.pdf)
+      
 # Results
 (this may be optional)
 
@@ -29,7 +29,7 @@ Code for ICML 2024 "Position Paper: Learning with 3D rotations, a hitchhiker’s
 (virtual environment or just list of dependencies) 
 (using git lsf to get datasets and our checkpoints/models)
 
-```
+```shell
 git clone git@github.com:martius-lab/hitchhiking-rotations.git
 pip3 install -e ./
 ```
