@@ -142,14 +142,71 @@ def get_loss_and_fout(loss: TrainingLoss, representation: Representation):
 
 
 # TEST
-print(get_loss_and_fout(TrainingLoss.L1, Representation.R9) == (l1_loss, svd_orthonormalization))
-print(get_loss_and_fout(TrainingLoss.L2, Representation.R9) == (l2_loss, svd_orthonormalization))
-print(get_loss_and_fout(TrainingLoss.L1, Representation.R6) == (l1_loss, gram_schmidt_orthonormalization))
-print(get_loss_and_fout(TrainingLoss.L2, Representation.R6) == (l2_loss, gram_schmidt_orthonormalization))
-print(get_loss_and_fout(TrainingLoss.L2, Representation.QUAT) == (l2_loss, default))
-print(get_loss_and_fout(TrainingLoss.QUAT_DP, Representation.QUAT) == (distance_picking_loss, default))
-print(get_loss_and_fout(TrainingLoss.QUAT_CP, Representation.QUAT_AUG) == (cosine_distance_loss, default))
-print(get_loss_and_fout(TrainingLoss.CHORDIAL, Representation.QUAT) == (chordial_loss, quat_to_rotmat))
-print(get_loss_and_fout(TrainingLoss.CHORDIAL, Representation.AXIS_ANGLE) == (chordial_loss, axis_angle_to_rotmat))
-print(get_loss_and_fout(TrainingLoss.GEODESIC, Representation.EULER) == (geodesic_loss, euler_to_rotmat))
+def test_parsing():
+    print(get_loss_and_fout(TrainingLoss.L1, Representation.R9) == (l1_loss, svd_orthonormalization))
+    print(get_loss_and_fout(TrainingLoss.L2, Representation.R9) == (l2_loss, svd_orthonormalization))
+    print(get_loss_and_fout(TrainingLoss.L1, Representation.R6) == (l1_loss, gram_schmidt_orthonormalization))
+    print(get_loss_and_fout(TrainingLoss.L2, Representation.R6) == (l2_loss, gram_schmidt_orthonormalization))
+    print(get_loss_and_fout(TrainingLoss.L2, Representation.QUAT) == (l2_loss, default))
+    print(get_loss_and_fout(TrainingLoss.QUAT_DP, Representation.QUAT) == (distance_picking_loss, default))
+    print(get_loss_and_fout(TrainingLoss.QUAT_CP, Representation.QUAT_AUG) == (cosine_distance_loss, default))
+    print(get_loss_and_fout(TrainingLoss.CHORDIAL, Representation.QUAT) == (chordial_loss, quat_to_rotmat))
+    print(get_loss_and_fout(TrainingLoss.CHORDIAL, Representation.AXIS_ANGLE) == (chordial_loss, axis_angle_to_rotmat))
+    print(get_loss_and_fout(TrainingLoss.GEODESIC, Representation.EULER) == (geodesic_loss, euler_to_rotmat))
 
+
+
+from torch.utils.data import Dataset, DataLoader
+class PointCloudDataset(Dataset):
+    def __init__(self, pcd_path, rotated_pcd_path, out_rot_path, representation: Representation):
+
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.pcd = np.load(pcd_path)
+        self.rotated_pcd = np.load(rotated_pcd_path)
+        self.out_rot = np.load(out_rot_path)
+        self.ixs = np.arange(len(self.pcd))
+
+        self.f_out = representation.get_f_out()
+        self.out_rot, self.ixs = representation.preprocess(self.out_rot, self.ixs)
+
+
+    def __len__(self):
+        return len(self.imgs)
+
+    def __getitem__(self, idx):
+        return (torch.from_numpy(np.concatenate((self.pcd[idx], self.rotated_pcd[idx]), axis=-1), device=self.device),
+                self.f_out(torch.from_numpy(self.out_rot[idx], device=self.device)))
+
+
+
+
+def test_dataset():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--representation",
+        help="Representation type",
+        type=Representation,
+        choices=list(Representation),
+        default=Representation.R9,
+        # required=True
+        )
+
+
+    args = parser.parse_args()
+
+    print(args.representation)
+
+    data_path = 'data_main'
+    pcd_path = f'{data_path}/train_point_cloud.npy'  # N, Npcd, 3
+    rotate_path = f'{data_path}/rotated_train_point_cloud.npy'
+    out_rots_path = f'{data_path}/train_rotations.npy'
+
+
+    dataset = PointCloudDataset(pcd_path, rotate_path, out_rots_path, args.representation)
+
+
+
+if __name__ == "__main__":
+    test_parsing()
+    test_dataset()
