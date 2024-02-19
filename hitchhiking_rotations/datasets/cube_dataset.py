@@ -1,4 +1,7 @@
+from hitchhiking_rotations import HITCHHIKING_ROOT_DIR
+from hitchhiking_rotations.utils import save_pickle, load_pickle
 import os
+from os.path import join
 import pickle
 from scipy.spatial.transform import Rotation
 import torch
@@ -7,28 +10,29 @@ from torch.utils.data import Dataset
 
 
 class CubeImageToPoseDataset(Dataset):
-    def __init__(self, args, device, dataset_file, name):
-        rots = Rotation.random(args.dataset_size)
+    def __init__(self, mode, dataset_size, device):
+        rots = Rotation.random(dataset_size)
         quats = rots.as_quat()
 
         self.quats = torch.from_numpy(quats)
         self.imgs = []
-        dataset_file = dataset_file + "_" + name + ".pkl"
 
-        if os.path.exists(dataset_file):
-            dic = pickle.load(open(dataset_file, "rb"))
+        path = join(HITCHHIKING_ROOT_DIR, "assets", "datasets", f"cube_dataset_{mode}.pkl")
+
+        if os.path.exists(path):
+            dic = load_pickle(path)
             self.imgs, self.quats = dic["imgs"], dic["quats"]
-            print("Dataset file exists -> loaded")
+            print(f"Dataset file was loaded: {path}")
         else:
             from .dataset_generation import DataGenerator
 
-            dg = DataGenerator(height=args.height, width=args.width)
-            for i in range(args.dataset_size):
+            dg = DataGenerator(height=64, width=64)
+            for i in range(dataset_size):
                 # TODO normalize data
                 self.imgs.append(torch.from_numpy(dg.render_img(quats[i])))
             dic = {"imgs": self.imgs, "quats": self.quats}
-            pickle.dump(dic, open(dataset_file, "wb"))
-            print("Dataset file was created and saved")
+            save_pickle(dic, path)
+            print(f"Dataset file was created and saved: {path}")
 
         self.imgs = [i.to(device) for i in self.imgs]
         self.quats = self.quats.to(device)
@@ -41,8 +45,8 @@ class CubeImageToPoseDataset(Dataset):
 
 
 class PoseToCubeImageDataset(CubeImageToPoseDataset):
-    def __init__(self, args, device, dataset_file, name):
-        super(PoseToCubeImageDataset, self).__init__(args, device, dataset_file, name)
+    def __init__(self, mode, dataset_size, device):
+        super(PoseToCubeImageDataset, self).__init__(mode, dataset_size, device)
 
     def __getitem__(self, idx):
         return roma.unitquat_to_rotmat(self.quats[idx]).type(torch.float32), self.imgs[idx].type(torch.float32) / 255

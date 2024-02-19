@@ -13,7 +13,7 @@ class MLP(nn.Module):
             nn.Linear(256, output_dim),
         )
 
-    def forward(x):
+    def forward(self, x):
         return self.model(x)
 
 

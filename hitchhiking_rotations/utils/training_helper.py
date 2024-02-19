@@ -3,23 +3,30 @@ import numpy as np
 import argparse
 import torch
 
+
 def default(*x):
     if len(x) == 1:
         return x[0]
     return x
 
+
 def svd_orthonormalization(x):
     pass
 
+
 def gram_schmidt_orthonormalization(x):
     pass
+
 
 def quat_to_rotmat(x):
     # normalize first
     pass
 
+
 def axis_angle_to_rotmat(x):
     pass
+
+
 def euler_to_rotmat(x):
     pass
 
@@ -29,6 +36,7 @@ def quat_aug_dataset(quats: np.ndarray, ixs):
     # return augmented inputs and quats
     return (np.concatenate((quats, -quats), axis=0), *np.concatenate((ixs, ixs), axis=0))
 
+
 def quat_hm_dataset(quats: np.ndarray):
     # quats: (N, M, .., 4)
     return np.where(quats[..., 3] < 0, -quats, quats)
@@ -36,24 +44,29 @@ def quat_hm_dataset(quats: np.ndarray):
 
 # losses
 
+
 def l1_loss(vec_gt, vec_pred):
     pass
+
 
 def l2_loss(vec_gt, vec_pred):
     pass
 
+
 def distance_picking_loss(vec_gt, vec_pred):
     pass
+
 
 def cosine_distance_loss(vec_gt, vec_pred):
     pass
 
+
 def geodesic_loss(Rot_gt, Rot_pred):
     pass
 
+
 def chordial_loss(Rot_gt, Rot_pred):
     pass
-
 
 
 class Representation(Enum):
@@ -85,7 +98,7 @@ class Representation(Enum):
         pre_process_dict = {
             Representation.R9: default,
             Representation.R6: default,
-            Representation.QUAT:default,
+            Representation.QUAT: default,
             Representation.QUAT_AUG: quat_aug_dataset,
             Representation.QUAT_HM: quat_hm_dataset,
             Representation.AXIS_ANGLE: default,
@@ -105,6 +118,7 @@ class TrainingLoss(Enum):
     def __str__(self) -> str:
         return self.value
 
+
 def get_loss_and_fout(loss: TrainingLoss, representation: Representation):
     loss_dict = {
         TrainingLoss.L1: l1_loss,
@@ -118,7 +132,10 @@ def get_loss_and_fout(loss: TrainingLoss, representation: Representation):
     f_out = representation.get_f_out()
 
     if representation in [Representation.R9, Representation.R6]:
-        assert loss not in [TrainingLoss.QUAT_DP, TrainingLoss.QUAT_CP], f"Loss {loss} not supported for representation {representation}"
+        assert loss not in [
+            TrainingLoss.QUAT_DP,
+            TrainingLoss.QUAT_CP,
+        ], f"Loss {loss} not supported for representation {representation}"
         if loss == TrainingLoss.CHORDIAL:
             print(f"Cordial loss for rotations is the same as L2 loss. Using default L2 loss")
             loss = TrainingLoss.L2
@@ -135,10 +152,7 @@ def get_loss_and_fout(loss: TrainingLoss, representation: Representation):
         if loss == TrainingLoss.CHORDIAL or loss == TrainingLoss.GEODESIC:
             f_out = euler_to_rotmat
 
-    return  loss_dict[loss], f_out
-
-
-
+    return loss_dict[loss], f_out
 
 
 # TEST
@@ -155,11 +169,11 @@ def test_parsing():
     print(get_loss_and_fout(TrainingLoss.GEODESIC, Representation.EULER) == (geodesic_loss, euler_to_rotmat))
 
 
-
 from torch.utils.data import Dataset, DataLoader
+
+
 class PointCloudDataset(Dataset):
     def __init__(self, pcd_path, rotated_pcd_path, out_rot_path, representation: Representation):
-
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.pcd = np.load(pcd_path)
         self.rotated_pcd = np.load(rotated_pcd_path)
@@ -169,15 +183,14 @@ class PointCloudDataset(Dataset):
         self.f_out = representation.get_f_out()
         self.out_rot, self.ixs = representation.preprocess(self.out_rot, self.ixs)
 
-
     def __len__(self):
         return len(self.imgs)
 
     def __getitem__(self, idx):
-        return (torch.from_numpy(np.concatenate((self.pcd[idx], self.rotated_pcd[idx]), axis=-1), device=self.device),
-                self.f_out(torch.from_numpy(self.out_rot[idx], device=self.device)))
-
-
+        return (
+            torch.from_numpy(np.concatenate((self.pcd[idx], self.rotated_pcd[idx]), axis=-1), device=self.device),
+            self.f_out(torch.from_numpy(self.out_rot[idx], device=self.device)),
+        )
 
 
 def test_dataset():
@@ -190,21 +203,18 @@ def test_dataset():
         choices=list(Representation),
         default=Representation.R9,
         # required=True
-        )
-
+    )
 
     args = parser.parse_args()
 
     print(args.representation)
 
-    data_path = 'data_main'
-    pcd_path = f'{data_path}/train_point_cloud.npy'  # N, Npcd, 3
-    rotate_path = f'{data_path}/rotated_train_point_cloud.npy'
-    out_rots_path = f'{data_path}/train_rotations.npy'
-
+    data_path = "data_main"
+    pcd_path = f"{data_path}/train_point_cloud.npy"  # N, Npcd, 3
+    rotate_path = f"{data_path}/rotated_train_point_cloud.npy"
+    out_rots_path = f"{data_path}/train_rotations.npy"
 
     dataset = PointCloudDataset(pcd_path, rotate_path, out_rots_path, args.representation)
-
 
 
 if __name__ == "__main__":

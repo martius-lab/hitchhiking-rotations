@@ -1,12 +1,33 @@
 import torch
-from .conversions import to_rotmat
+import roma
 
 
 def chordal_distance(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-    return torch.norm(pred - target, p="fro", dim=[1, 2])
+    return torch.norm(pred - target, p="fro", dim=[1, 2]).mean()
 
 
-def l2_dp_loss(pred: torch.Tensor, target: torch.Tensor, **kwargs) -> torch.Tensor:
+def cosine_distance(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    return 1 - torch.nn.functional.cosine_similarity(pred, target).mean()
+
+
+def cosine_similarity(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    return torch.nn.functional.cosine_similarity(pred, target).mean()
+
+
+def geodesic_distance(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    print("not tested")
+    return roma.rotmat_geodesic_distance(pred, target).mean()
+
+
+def l1(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    return torch.norm(pred - target, p=1, dim=[1, 2]).mean()
+
+
+def l2(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    return torch.nn.functional.mse_loss(pred, target).mean()
+
+
+def l2_dp(pred: torch.Tensor, target: torch.Tensor, **kwargs) -> torch.Tensor:
     """
     Returns distance picking l2 norm
 
@@ -29,20 +50,3 @@ def l2_dp_loss(pred: torch.Tensor, target: torch.Tensor, **kwargs) -> torch.Tens
 
     m1 = normal < flipped
     return (normal[m1].sum() + flipped[~m1].sum()) / m1.numel()
-
-
-def cosine_similarity_loss(pred: torch.Tensor, target: torch.Tensor, **kwargs) -> torch.Tensor:
-    return torch.nn.functional.cosine_similarity(pred, target).mean()
-
-
-def chordal_loss(pred: torch.Tensor, target: torch.Tensor, rotation_representation: str, **kwargs) -> torch.Tensor:
-    base_pred = to_rotmat(pred, rotation_representation)
-
-    with torch.no_grad():
-        base_target = to_rotmat(target, rotation_representation)
-
-    return chordal_distance(base_pred, base_target).mean()
-
-
-def mse_loss(pred: torch.Tensor, target: torch.Tensor, **kwargs) -> torch.Tensor:
-    return torch.nn.functional.mse_loss(pred, target).mean()
