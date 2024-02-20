@@ -1,0 +1,12 @@
+figure.titlesize:20
+figure.figsize:7.0,4.0
+figure.dpi:200
+xtick.labelsize:12
+ytick.labelsize:12
+lines.linewidth:3.0
+axes.labelsize:15
+legend.fontsize:15
+axes.grid:False
+image.cmap:Accent
+pdf.fonttype: 42
+ps.fonttype: 42

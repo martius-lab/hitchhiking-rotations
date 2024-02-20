@@ -47,6 +47,11 @@ shared_trainer_cfg = {
 }
 
 cfg_exp = {
+    "model_pcd_9": {"_target_": "hitchhiking_rotations.models.MLPNetPCD", "in_size": (6, 3000), "out_size": 9},
+    "model_pcd_6": {"_target_": "hitchhiking_rotations.models.MLPNetPCD", "in_size": (6, 3000), "out_size": 6},
+    "model_pcd_4": {"_target_": "hitchhiking_rotations.models.MLPNetPCD", "in_size": (6, 3000), "out_size": 4},
+    "model_pcd_3": {"_target_": "hitchhiking_rotations.models.MLPNetPCD", "in_size": (6, 3000), "out_size": 3},
+
     "model9": {"_target_": "hitchhiking_rotations.models.MLP", "input_dim": 12288, "output_dim": 9},
     "model6": {"_target_": "hitchhiking_rotations.models.MLP", "input_dim": 12288, "output_dim": 6},
     "model4": {"_target_": "hitchhiking_rotations.models.MLP", "input_dim": 12288, "output_dim": 4},
@@ -124,6 +129,17 @@ cfg_exp = {
         "_target_": "hitchhiking_rotations.datasets.CubeImageToPoseDataset",
         "mode": "test",
         "dataset_size": 2048,
+        "device": device,
+    },
+
+    "training_data_pcd": {
+        "_target_": "hitchhiking_rotations.datasets.PointCloudDataset",
+        "mode": "train",
+        "device": device,
+    },
+    "test_data_pcd": {
+        "_target_": "hitchhiking_rotations.datasets.PointCloudDataset",
+        "mode": "test",
         "device": device,
     },
 }

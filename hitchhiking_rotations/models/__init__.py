@@ -1,1 +1,1 @@
-from .models import MLP, CNN
+from .models import MLP, CNN, MLPNetPCD
