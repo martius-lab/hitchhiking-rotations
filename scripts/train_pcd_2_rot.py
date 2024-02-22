@@ -175,20 +175,7 @@ def test(model: MLPNetPCD, dataset_test: PointCloudDataset, to_rot, out_path):
     return metrics
 
 
-def plot_results(results_path, outputdir):
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    plt.style.use(f'{os.path.dirname(os.path.realpath(__file__))}/prettyplots.mplstyle')
-    sns.set_style('whitegrid')
-    plt.rcParams.update({'font.size': 11})
-    #plt.rcParams['figure.figsize'] = [8, 8]
-    colors = [(0.368, 0.507, 0.71), (0.881, 0.611, 0.142), (0.923, 0.386,0.209),
-            (0.56, 0.692, 0.195),(0.528, 0.471, 0.701), (0.772, 0.432,0.102),
-            (0.572, 0.586, 0.) ]
-    current_size = (5.6,2.1)
-
-    results = {f.split('_results')[0]: pickle.load(open(f"{results_path}/{f}", "rb")) for f in os.listdir(results_path) if f.endswith('.pkl')}
-
+def plot_single_seed(results_path, outputdir):
     datas = {}
     for f in os.listdir(results_path):
         if f.endswith('.pkl'):
@@ -199,6 +186,20 @@ def plot_results(results_path, outputdir):
                 else:
                     datas[metric] = {config_names[f.split('_results')[0]]: value}
 
+    plot_data(datas, outputdir)
+
+
+def plot_data(datas, outputdir):
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    plt.style.use(f'{os.path.dirname(os.path.realpath(__file__))}/prettyplots.mplstyle')
+    sns.set_style('whitegrid')
+    plt.rcParams.update({'font.size': 7})
+    #plt.rcParams['figure.figsize'] = [8, 8]
+    colors = [(0.368, 0.507, 0.71), (0.881, 0.611, 0.142), (0.923, 0.386,0.209),
+            (0.56, 0.692, 0.195),(0.528, 0.471, 0.701), (0.772, 0.432,0.102),
+            (0.572, 0.586, 0.) ]
+    current_size = (5.6,2.1)
 
     os.makedirs(outputdir, exist_ok=True)
     for metric, data in datas.items():
@@ -231,18 +232,41 @@ def plot_results(results_path, outputdir):
             # close
             plt.close()
 
-if __name__ == "__main__":
 
+def plot_over_seeds():
+    output_path = 'assets/pcd_results_over_seeds'
+    results_path = 'output/pcd_exp'
+
+    result_folders = [f"{results_path}/{f}" for f in os.listdir(results_path) if os.path.isdir(f"{results_path}/{f}")]
+
+    datas = {}
+    for result_folder in result_folders:
+        for f in os.listdir(result_folder):
+            if f.endswith('.pkl'):
+                metrics = pickle.load(open(f"{result_folder}/{f}", "rb"))
+                for metric, value in metrics.items():
+                    if metric in datas:
+                        name = config_names[f.split('_results')[0]]
+                        if name in datas[metric]:
+                            datas[metric][name].append(value.mean())
+                        else:
+                            datas[metric][name] = [value.mean()]
+                    else:
+                        datas[metric] = {config_names[f.split('_results')[0]]: [value.mean()]}
+    plot_data(datas, output_path)
+
+
+def train_for_all_cases(seeds=10):
     out_dir = f'output/pcd_exp'
     os.makedirs(out_dir, exist_ok=True)
     num_epochs = 100
     batch_size = 32
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    for seed in range(10):
+    for seed in range(seeds):
         for key, config in cases.items():
             print(f"\n\nTraining {key}")
-            # SAME AS IN TRAIN.py
+            # SAME AS IN TRAIN.py (@JONAS)
             training_loss, postprocess_pred, to_rot, preprocess_target, in_shape, out_size = config
 
 
@@ -259,10 +283,14 @@ if __name__ == "__main__":
             # Test
             dataset_test = PointCloudDataset(mode="test", device=device)
             model = MLPNetPCD(in_size=in_shape, out_size=out_size).cuda()
-
-            results = test(model, dataset_test, config.to_rot, out_path)
-
+            test(model, dataset_test, config.to_rot, out_path)
 
 
         # Plot
-        plot_results(results_path=f"{out_dir}/{seed}", outputdir='assets/pcd_results')
+        # plot_single_seed(results_path=f"{out_dir}/{seed}", outputdir=f'assets/pcd_results/{seed}')
+
+
+if __name__ == "__main__":
+    train_for_all_cases()
+
+    plot_over_seeds()
