@@ -2,6 +2,7 @@ import os
 import pickle
 import numpy as np
 from tqdm import tqdm
+import pandas as pd
 
 import torch
 import torch.nn.functional as F
@@ -34,10 +35,10 @@ cases = {
     "quat_chordal": Config(utils.metrics.chordal_distance, utils.quaternion_to_rotmat, utils.quaternion_to_rotmat, utils.passthrough, (6, 3000), 4),
     "quat_geodesic": Config(utils.metrics.geodesic_distance, utils.quaternion_to_rotmat, utils.quaternion_to_rotmat, utils.passthrough, (6, 3000), 4),
 
-    # "quataug_l1": Config(utils.metrics.l1, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_rand_flip, (6, 3000), 4),
-    # "quataug_l2": Config(utils.metrics.l2, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_rand_flip, (6, 3000), 4),
-    "quataug_dp": Config(utils.metrics.l2_dp, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_rand_flip, (6, 3000), 4),
-    # "quataug_cp": Config(utils.metrics.cosine_distance, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_rand_flip, (6, 3000), 4),
+    # "quatrand_l1": Config(utils.metrics.l1, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_rand_flip, (6, 3000), 4),
+    # "quatrand_l2": Config(utils.metrics.l2, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_rand_flip, (6, 3000), 4),
+    "quatrand_dp": Config(utils.metrics.l2_dp, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_rand_flip, (6, 3000), 4),
+    # "quatrand_cp": Config(utils.metrics.cosine_distance, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_rand_flip, (6, 3000), 4),
 
     "quatcanonical_l1": Config(utils.metrics.l1, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_canonical, (6, 3000), 4),
     "quatcanonical_l2": Config(utils.metrics.l2, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_canonical, (6, 3000), 4),
@@ -68,8 +69,8 @@ loss_name = {
 map_names ={"r9": r'$\mathbb{R}^9+$SVD',
             "r6":  r'$\mathbb{R}^6$+GSO',
             "quat": "Quat",
-            "quataug": r'Quat$^+$',
-            "quatcanonical": 'Quat + canonical',
+            "quatrand": r'Quat (Random)',
+            "quatcanonical": r'Quat$^+$',
             "axisangle": "Exp",
             "euler": "Euler"}
 
@@ -196,41 +197,39 @@ def plot_data(datas, outputdir):
     sns.set_style('whitegrid')
     plt.rcParams.update({'font.size': 7})
     #plt.rcParams['figure.figsize'] = [8, 8]
-    colors = [(0.368, 0.507, 0.71), (0.881, 0.611, 0.142), (0.923, 0.386,0.209),
-            (0.56, 0.692, 0.195),(0.528, 0.471, 0.701), (0.772, 0.432,0.102),
-            (0.572, 0.586, 0.) ]
+
+    colors = [(0.368, 0.507, 0.71), (0.881, 0.611, 0.142), (0.923, 0.386,0.209), (0.56, 0.692, 0.195),(0.528, 0.471, 0.701), (0.772, 0.432,0.102), (0.572, 0.586, 0.) ]
     current_size = (5.6,2.1)
 
     os.makedirs(outputdir, exist_ok=True)
     for metric, data in datas.items():
-            # reset fig
-            plt.figure()
-            sns.boxplot(data=data, palette="Blues", orient='h', width=0.5, linewidth=1.5, fliersize=2.5, showmeans=False)
-            plt.xlabel(f'{metric} distance (rad)')
-            plt.tight_layout()
 
+        sorttype = 'mean'  # Arrange boxes in plot by name or data mean
+        if sorttype == 'mean':
+            df = pd.DataFrame(data)
+            df = df[df.mean().sort_values().index]
+        elif sorttype == 'name':
+            df = dict(sorted(data.items()))
+
+        plt.figure().set_figheight(7)  # Reset figure
+        g = sns.boxplot(data=df, palette="Blues", orient='h', width=0.5, linewidth=1.5, fliersize=2.5, showmeans=False)
+
+        plt.xlabel(f'{metric} distance (rad)')
+        plt.xlim(0.06, 1.1)
+        plt.grid(True, which="both", axis="x", ls="--")
+        #plt.axvline(x=np.pi, color='k', linestyle='--', linewidth=1)
+
+        plt.tight_layout()
+
+        xscale = 'log' # 'log' or 'linear'
+        if xscale == 'log':
             plt.xscale('log')
-            plt.savefig(f'./{outputdir}/{metric}_pcd_results_logx.png', dpi=300)
-            plt.savefig(f'./{outputdir}/{metric}_pcd_results_logx.pdf')
-
+        elif xscale == 'linear':
             plt.xscale('linear')
-            plt.savefig(f'./{outputdir}/{metric}_pcd_results.png', dpi=300)
-            plt.savefig(f'./{outputdir}/{metric}_pcd_results.pdf')
 
-
-            # line
-            plt.axvline(x=np.pi, color='k', linestyle='--', linewidth=1)
-
-            plt.xscale('log')
-            plt.savefig(f'./{outputdir}/{metric}_pcd_results_line_logx.png', dpi=300)
-            plt.savefig(f'./{outputdir}/{metric}_pcd_results_line_logx.pdf')
-
-            plt.xscale('linear')
-            plt.savefig(f'./{outputdir}/{metric}_pcd_results_line.png', dpi=300)
-            plt.savefig(f'./{outputdir}/{metric}_pcd_results_line.pdf')
-
-            # close
-            plt.close()
+        plt.savefig(f'./{outputdir}/{metric}_pcd_results_{xscale}.png', dpi=300)
+        plt.savefig(f'./{outputdir}/{metric}_pcd_results_{xscale}.pdf')
+        plt.close()
 
 
 def plot_over_seeds():
@@ -269,10 +268,8 @@ def train_for_all_cases(seeds=10):
             # SAME AS IN TRAIN.py (@JONAS)
             training_loss, postprocess_pred, to_rot, preprocess_target, in_shape, out_size = config
 
-
-
             out_path = f'{out_dir}/{seed}/{key}'
-            os.makedirs(out_path, exist_ok=True)
+            #os.makedirs(out_path, exist_ok=True)
 
             # Train
             dataset_train = PointCloudDataset(mode="train", device=device)
@@ -291,6 +288,6 @@ def train_for_all_cases(seeds=10):
 
 
 if __name__ == "__main__":
-    train_for_all_cases()
+    #train_for_all_cases()
 
     plot_over_seeds()
