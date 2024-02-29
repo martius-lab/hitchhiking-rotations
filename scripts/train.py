@@ -19,7 +19,7 @@ parser.add_argument(
     "--experiment",
     type=str,
     choices=["cube_image_to_pose", "pose_to_cube_image", "pcd_to_pose"] + fourier_choices,
-    default="cube_image_to_pose",
+    default="pcd_to_pose",
     help="Experiment Configuration",
 )
 parser.add_argument("--seed", type=int, default=0, help="number of seeds")
@@ -39,7 +39,7 @@ elif args.experiment == "pose_to_cube_image":
 elif args.experiment == "pose_to_fourier":
     cfg_exp = get_cfg_pose_to_fourier(device, nf=seed, nb=int(arg.experiment.split("_")[-1]))
 
-elif args.experiment == "cube_pcd_to_pose":
+elif args.experiment == "pcd_to_pose":
     cfg_exp = get_cfg_pcd_to_pose(device)
 
 OmegaConf.register_new_resolver("u", lambda x: hydra.utils.get_method("hitchhiking_rotations.utils." + x))
