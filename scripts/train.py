@@ -12,10 +12,13 @@ from torch.utils.data import DataLoader
 import copy
 
 parser = argparse.ArgumentParser()
+
+fourier_choices = ["pose_to_fourier_{idx}" for idx in range(1, 8)]
+
 parser.add_argument(
     "--experiment",
     type=str,
-    choices=["cube_image_to_pose", "pose_to_cube_image", "pose_to_fourie_1"],
+    choices=["cube_image_to_pose", "pose_to_cube_image", "pcd_to_pose"] + fourier_choices,
     default="cube_image_to_pose",
     help="Experiment Configuration",
 )
@@ -33,14 +36,13 @@ if args.experiment == "cube_image_to_pose":
 elif args.experiment == "pose_to_cube_image":
     cfg_exp = get_cfg_pose_to_cube_image(device)
 
-elif args.experiment == "pose_to_fourie":
-    cfg_exp = get_cfg_pose_to_fourie(device, nf=seed, nb=int(arg.experiment.split("_")[-1]))
+elif args.experiment == "pose_to_fourier":
+    cfg_exp = get_cfg_pose_to_fourier(device, nf=seed, nb=int(arg.experiment.split("_")[-1]))
 
 elif args.experiment == "cube_pcd_to_pose":
     cfg_exp = get_cfg_pcd_to_pose(device)
 
 OmegaConf.register_new_resolver("u", lambda x: hydra.utils.get_method("hitchhiking_rotations.utils." + x))
-OmegaConf.register_new_resolver("get_method", hydra.utils.get_method)
 
 cfg_exp = OmegaConf.create(cfg_exp)
 

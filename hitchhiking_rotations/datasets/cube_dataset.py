@@ -50,10 +50,3 @@ class PoseToCubeImageDataset(CubeImageToPoseDataset):
 
     def __getitem__(self, idx):
         return roma.unitquat_to_rotmat(self.quats[idx]).type(torch.float32), self.imgs[idx].type(torch.float32) / 255
-
-
-class PoseToCubeImageDataset(CubeImageToPoseDataset):
-    def __init__(self, mode, nb, nf, device): ...
-
-    def __getitem__(self, idx):
-        return x, y
