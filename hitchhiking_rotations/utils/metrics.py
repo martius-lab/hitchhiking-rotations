@@ -5,20 +5,25 @@ import roma
 def chordal_distance(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
     return torch.nn.functional.mse_loss(pred, target).mean()
 
+
 def cosine_distance(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
     return 1 - torch.nn.functional.cosine_similarity(pred, target).mean()
+
 
 def cosine_similarity(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
     pred = pred / pred.norm(dim=1, keepdim=True)
     return torch.nn.functional.cosine_similarity(pred, target).mean()
 
+
 def geodesic_distance(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
     # return roma.rotmat_geodesic_distance_naive(pred, target).mean()
     return roma.rotmat_geodesic_distance(pred, target).mean()
 
+
 def l1(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
     # return torch.norm(pred - target, p=1, dim=[1, 2]).mean()
     return torch.nn.functional.l1_loss(pred, target).mean()
+
 
 def l2(pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
     return torch.nn.functional.mse_loss(pred, target).mean()
@@ -52,8 +57,9 @@ def l2_dp(pred: torch.Tensor, target: torch.Tensor, **kwargs) -> torch.Tensor:
 def test_all():
     # Test geodesic distance (make sure it is the same as scipy)
     from scipy.spatial.transform import Rotation
+
     r1 = Rotation.random()
-    r2 =Rotation.random()
+    r2 = Rotation.random()
     r1_torch = torch.tensor(r1.as_matrix())
     r2_torch = torch.tensor(r2.as_matrix())
 

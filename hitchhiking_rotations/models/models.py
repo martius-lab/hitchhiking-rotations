@@ -56,7 +56,6 @@ class CNN(nn.Module):
 
 
 class MLPNetPCD(nn.Module):
-
     def __init__(self, in_size, out_size):
         super(MLPNetPCD, self).__init__()
 
@@ -71,16 +70,13 @@ class MLPNetPCD(nn.Module):
             nn.Conv1d(256, 1024, kernel_size=1),
             self.LR,
             nn.MaxPool1d(kernel_size=in_size[1]),
-
             nn.Flatten(),
-
             nn.Linear(1024, 512),
             nn.Dropout(0.5),
             self.LR,
             nn.Linear(512, 512),
             nn.Dropout(0.3),
             self.LR,
-
             nn.Linear(512, out_size),
         )
 
@@ -88,10 +84,12 @@ class MLPNetPCD(nn.Module):
             if isinstance(m, nn.Linear) or isinstance(m, nn.Conv1d):
                 torch.nn.init.xavier_uniform_(m.weight)
                 m.bias.data.fill_(0.0)
+
         self.net.apply(init_weights)
 
     def forward(self, x):
         out = self.net(x)
         return out
-# ------------------------------------------------------------------------------
 
+
+# ------------------------------------------------------------------------------

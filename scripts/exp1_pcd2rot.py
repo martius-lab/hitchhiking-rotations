@@ -16,69 +16,184 @@ from hitchhiking_rotations.datasets import PointCloudDataset
 
 from collections import namedtuple
 
-Config = namedtuple('Config', ['training_loss', 'postprocess_pred', 'to_rot', 'preprocess_target', 'in_shape', 'out_size'])
+Config = namedtuple(
+    "Config", ["training_loss", "postprocess_pred", "to_rot", "preprocess_target", "in_shape", "out_size"]
+)
 
 cases = {
-    "r9_l1": Config(utils.metrics.l1, utils.procrustes_to_rotmat, utils.procrustes_to_rotmat, utils.passthrough, (6, 3000), 9),
-    "r9_l2": Config(utils.metrics.l2, utils.procrustes_to_rotmat, utils.procrustes_to_rotmat, utils.passthrough, (6, 3000), 9),
-    "r9_geodesic": Config(utils.metrics.geodesic_distance, utils.procrustes_to_rotmat, utils.procrustes_to_rotmat, utils.passthrough, (6, 3000), 9),
-
-    "r6_l1": Config(utils.metrics.l1, utils.gramschmidt_to_rotmat, utils.gramschmidt_to_rotmat, utils.passthrough, (6, 3000), 6),
-    "r6_l2": Config(utils.metrics.l2, utils.gramschmidt_to_rotmat, utils.gramschmidt_to_rotmat, utils.passthrough, (6, 3000), 6),
-    "r6_chordal": Config(utils.metrics.chordal_distance, utils.gramschmidt_to_rotmat, utils.gramschmidt_to_rotmat, utils.passthrough, (6, 3000), 6),
-    "r6_geodesic": Config(utils.metrics.geodesic_distance, utils.gramschmidt_to_rotmat, utils.gramschmidt_to_rotmat, utils.passthrough, (6, 3000), 6),
-
-    "quat_l1": Config(utils.metrics.l1, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion, (6, 3000), 4),
-    "quat_l2": Config(utils.metrics.l2, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion, (6, 3000), 4),
-    "quat_dp": Config(utils.metrics.l2_dp, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion, (6, 3000), 4),
-    "quat_cp": Config(utils.metrics.cosine_distance, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion, (6, 3000), 4),
-    "quat_chordal": Config(utils.metrics.chordal_distance, utils.quaternion_to_rotmat, utils.quaternion_to_rotmat, utils.passthrough, (6, 3000), 4),
-    "quat_geodesic": Config(utils.metrics.geodesic_distance, utils.quaternion_to_rotmat, utils.quaternion_to_rotmat, utils.passthrough, (6, 3000), 4),
-
+    "r9_l1": Config(
+        utils.metrics.l1, utils.procrustes_to_rotmat, utils.procrustes_to_rotmat, utils.passthrough, (6, 3000), 9
+    ),
+    "r9_l2": Config(
+        utils.metrics.l2, utils.procrustes_to_rotmat, utils.procrustes_to_rotmat, utils.passthrough, (6, 3000), 9
+    ),
+    "r9_geodesic": Config(
+        utils.metrics.geodesic_distance,
+        utils.procrustes_to_rotmat,
+        utils.procrustes_to_rotmat,
+        utils.passthrough,
+        (6, 3000),
+        9,
+    ),
+    "r6_l1": Config(
+        utils.metrics.l1, utils.gramschmidt_to_rotmat, utils.gramschmidt_to_rotmat, utils.passthrough, (6, 3000), 6
+    ),
+    "r6_l2": Config(
+        utils.metrics.l2, utils.gramschmidt_to_rotmat, utils.gramschmidt_to_rotmat, utils.passthrough, (6, 3000), 6
+    ),
+    "r6_chordal": Config(
+        utils.metrics.chordal_distance,
+        utils.gramschmidt_to_rotmat,
+        utils.gramschmidt_to_rotmat,
+        utils.passthrough,
+        (6, 3000),
+        6,
+    ),
+    "r6_geodesic": Config(
+        utils.metrics.geodesic_distance,
+        utils.gramschmidt_to_rotmat,
+        utils.gramschmidt_to_rotmat,
+        utils.passthrough,
+        (6, 3000),
+        6,
+    ),
+    "quat_l1": Config(
+        utils.metrics.l1, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion, (6, 3000), 4
+    ),
+    "quat_l2": Config(
+        utils.metrics.l2, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion, (6, 3000), 4
+    ),
+    "quat_dp": Config(
+        utils.metrics.l2_dp, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion, (6, 3000), 4
+    ),
+    "quat_cp": Config(
+        utils.metrics.cosine_distance,
+        utils.passthrough,
+        utils.quaternion_to_rotmat,
+        utils.rotmat_to_quaternion,
+        (6, 3000),
+        4,
+    ),
+    "quat_chordal": Config(
+        utils.metrics.chordal_distance,
+        utils.quaternion_to_rotmat,
+        utils.quaternion_to_rotmat,
+        utils.passthrough,
+        (6, 3000),
+        4,
+    ),
+    "quat_geodesic": Config(
+        utils.metrics.geodesic_distance,
+        utils.quaternion_to_rotmat,
+        utils.quaternion_to_rotmat,
+        utils.passthrough,
+        (6, 3000),
+        4,
+    ),
     # "quatrand_l1": Config(utils.metrics.l1, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_rand_flip, (6, 3000), 4),
     # "quatrand_l2": Config(utils.metrics.l2, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_rand_flip, (6, 3000), 4),
-    "quatrand_dp": Config(utils.metrics.l2_dp, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_rand_flip, (6, 3000), 4),
+    "quatrand_dp": Config(
+        utils.metrics.l2_dp,
+        utils.passthrough,
+        utils.quaternion_to_rotmat,
+        utils.rotmat_to_quaternion_rand_flip,
+        (6, 3000),
+        4,
+    ),
     # "quatrand_cp": Config(utils.metrics.cosine_distance, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_rand_flip, (6, 3000), 4),
-
-    "quatcanonical_l1": Config(utils.metrics.l1, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_canonical, (6, 3000), 4),
-    "quatcanonical_l2": Config(utils.metrics.l2, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_canonical, (6, 3000), 4),
-    "quatcanonical_dp": Config(utils.metrics.l2_dp, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_canonical, (6, 3000), 4),
-    "quatcanonical_cp": Config(utils.metrics.cosine_distance, utils.passthrough, utils.quaternion_to_rotmat, utils.rotmat_to_quaternion_canonical, (6, 3000), 4),
-    "quatcanonical_chordal": Config(utils.metrics.chordal_distance, utils.quaternion_to_rotmat, utils.quaternion_to_rotmat, utils.passthrough, (6, 3000), 4),
-    "quatcanonical_geodesic": Config(utils.metrics.geodesic_distance, utils.quaternion_to_rotmat, utils.quaternion_to_rotmat, utils.passthrough, (6, 3000), 4),
-
-    "axisangle_l1": Config(utils.metrics.l1, utils.passthrough, utils.rotvec_to_rotmat, utils.rotmat_to_rotvec, (6, 3000), 3),
-    "axisangle_l2": Config(utils.metrics.l2, utils.passthrough, utils.rotvec_to_rotmat, utils.rotmat_to_rotvec, (6, 3000), 3),
-    "axisangle_chordal": Config(utils.metrics.chordal_distance, utils.rotvec_to_rotmat, utils.rotvec_to_rotmat, utils.passthrough, (6, 3000), 3),
-    "axisangle_geodesic": Config(utils.metrics.geodesic_distance, utils.rotvec_to_rotmat, utils.rotvec_to_rotmat, utils.passthrough, (6, 3000), 3),
-
+    "quatcanonical_l1": Config(
+        utils.metrics.l1,
+        utils.passthrough,
+        utils.quaternion_to_rotmat,
+        utils.rotmat_to_quaternion_canonical,
+        (6, 3000),
+        4,
+    ),
+    "quatcanonical_l2": Config(
+        utils.metrics.l2,
+        utils.passthrough,
+        utils.quaternion_to_rotmat,
+        utils.rotmat_to_quaternion_canonical,
+        (6, 3000),
+        4,
+    ),
+    "quatcanonical_dp": Config(
+        utils.metrics.l2_dp,
+        utils.passthrough,
+        utils.quaternion_to_rotmat,
+        utils.rotmat_to_quaternion_canonical,
+        (6, 3000),
+        4,
+    ),
+    "quatcanonical_cp": Config(
+        utils.metrics.cosine_distance,
+        utils.passthrough,
+        utils.quaternion_to_rotmat,
+        utils.rotmat_to_quaternion_canonical,
+        (6, 3000),
+        4,
+    ),
+    "quatcanonical_chordal": Config(
+        utils.metrics.chordal_distance,
+        utils.quaternion_to_rotmat,
+        utils.quaternion_to_rotmat,
+        utils.passthrough,
+        (6, 3000),
+        4,
+    ),
+    "quatcanonical_geodesic": Config(
+        utils.metrics.geodesic_distance,
+        utils.quaternion_to_rotmat,
+        utils.quaternion_to_rotmat,
+        utils.passthrough,
+        (6, 3000),
+        4,
+    ),
+    "axisangle_l1": Config(
+        utils.metrics.l1, utils.passthrough, utils.rotvec_to_rotmat, utils.rotmat_to_rotvec, (6, 3000), 3
+    ),
+    "axisangle_l2": Config(
+        utils.metrics.l2, utils.passthrough, utils.rotvec_to_rotmat, utils.rotmat_to_rotvec, (6, 3000), 3
+    ),
+    "axisangle_chordal": Config(
+        utils.metrics.chordal_distance, utils.rotvec_to_rotmat, utils.rotvec_to_rotmat, utils.passthrough, (6, 3000), 3
+    ),
+    "axisangle_geodesic": Config(
+        utils.metrics.geodesic_distance, utils.rotvec_to_rotmat, utils.rotvec_to_rotmat, utils.passthrough, (6, 3000), 3
+    ),
     "euler_l1": Config(utils.metrics.l1, utils.passthrough, utils.euler_to_rotmat, utils.rotmat_to_euler, (6, 3000), 3),
     "euler_l2": Config(utils.metrics.l2, utils.passthrough, utils.euler_to_rotmat, utils.rotmat_to_euler, (6, 3000), 3),
-    "euler_chordal": Config(utils.metrics.chordal_distance, utils.euler_to_rotmat, utils.euler_to_rotmat, utils.passthrough, (6, 3000), 3),
-    "euler_geodesic": Config(utils.metrics.geodesic_distance, utils.euler_to_rotmat, utils.euler_to_rotmat, utils.passthrough, (6, 3000), 3),
+    "euler_chordal": Config(
+        utils.metrics.chordal_distance, utils.euler_to_rotmat, utils.euler_to_rotmat, utils.passthrough, (6, 3000), 3
+    ),
+    "euler_geodesic": Config(
+        utils.metrics.geodesic_distance, utils.euler_to_rotmat, utils.euler_to_rotmat, utils.passthrough, (6, 3000), 3
+    ),
 }
 
 loss_name = {
-    "l1": 'MAE',
-    "l2": 'MSE',
-    "dp": 'DP',
-    "cp": 'CD',
-    "chordal": 'Chordal',
-    "geodesic": 'Geodesic',
+    "l1": "MAE",
+    "l2": "MSE",
+    "dp": "DP",
+    "cp": "CD",
+    "chordal": "Chordal",
+    "geodesic": "Geodesic",
 }
-map_names ={"r9": r'$\mathbb{R}^9+$SVD',
-            "r6":  r'$\mathbb{R}^6$+GSO',
-            "quat": "Quat",
-            "quatrand": r'Quat (Random)',
-            "quatcanonical": r'Quat$^+$',
-            "axisangle": "Exp",
-            "euler": "Euler"}
+map_names = {
+    "r9": r"$\mathbb{R}^9+$SVD",
+    "r6": r"$\mathbb{R}^6$+GSO",
+    "quat": "Quat",
+    "quatrand": r"Quat (Random)",
+    "quatcanonical": r"Quat$^+$",
+    "axisangle": "Exp",
+    "euler": "Euler",
+}
 
 config_names = {k: f"{map_names[k.split('_')[0]]} - {loss_name[k.split('_')[1]]}" for k in cases.keys()}
 
-def train(model: MLPNetPCD, dataset_train: PointCloudDataset, conf: Config, nb_epoch=100, batch_size=32, out_path=''):
 
-    if os.path.exists(f'./{out_path}.pt'):
+def train(model: MLPNetPCD, dataset_train: PointCloudDataset, conf: Config, nb_epoch=100, batch_size=32, out_path=""):
+    if os.path.exists(f"./{out_path}.pt"):
         print(f"Model {out_path} already trained")
         return
     else:
@@ -89,7 +204,7 @@ def train(model: MLPNetPCD, dataset_train: PointCloudDataset, conf: Config, nb_e
             self.patience = patience
             self.min_delta = min_delta
             self.counter = 0
-            self.min_validation_loss = float('inf')
+            self.min_validation_loss = float("inf")
 
         def early_stop(self, validation_loss):
             if validation_loss < self.min_validation_loss:
@@ -100,7 +215,6 @@ def train(model: MLPNetPCD, dataset_train: PointCloudDataset, conf: Config, nb_e
                 if self.counter >= self.patience:
                     return True
             return False
-
 
     early_stopper = EarlyStopper(patience=10, min_delta=0)
     dataloader_train = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
@@ -113,7 +227,7 @@ def train(model: MLPNetPCD, dataset_train: PointCloudDataset, conf: Config, nb_e
     for epoch in range(nb_epoch):
         model.train()
 
-        for in_pcd, target_rot in (bar:= tqdm(dataloader_train)):
+        for in_pcd, target_rot in (bar := tqdm(dataloader_train)):
             with torch.no_grad():
                 target_rot = conf.preprocess_target(target_rot)
 
@@ -126,7 +240,7 @@ def train(model: MLPNetPCD, dataset_train: PointCloudDataset, conf: Config, nb_e
             optimizer.step()
             running_loss = l.item()
 
-            bar.set_description(f'Epoch [{epoch + 1}/{nb_epoch}], Train Loss: {running_loss}')
+            bar.set_description(f"Epoch [{epoch + 1}/{nb_epoch}], Train Loss: {running_loss}")
 
         train_losses.append(running_loss)
 
@@ -144,7 +258,7 @@ def train(model: MLPNetPCD, dataset_train: PointCloudDataset, conf: Config, nb_e
         #     break
 
     # Save
-    torch.save(model.state_dict(), f'./{out_path}.pt')
+    torch.save(model.state_dict(), f"./{out_path}.pt")
 
     print("\n\n")
     ##############################################################################
@@ -152,15 +266,15 @@ def train(model: MLPNetPCD, dataset_train: PointCloudDataset, conf: Config, nb_e
 
 @torch.no_grad()
 def test(model: MLPNetPCD, dataset_test: PointCloudDataset, to_rot, out_path):
-    result_path = f'./{out_path}_results.pkl'
+    result_path = f"./{out_path}_results.pkl"
     if os.path.exists(result_path):
         print(f"Results {result_path} already computed")
-        return pickle.load(open(result_path, 'rb'))
+        return pickle.load(open(result_path, "rb"))
 
     test_in_pcd, test_out_rot = dataset_test[:]
 
     # test
-    model.load_state_dict(torch.load(f'./{out_path}.pt'))
+    model.load_state_dict(torch.load(f"./{out_path}.pt"))
     model.eval()
 
     test_pred = model(test_in_pcd)
@@ -168,10 +282,10 @@ def test(model: MLPNetPCD, dataset_test: PointCloudDataset, to_rot, out_path):
 
     # metrics
     metrics = {
-        "CHORDAL": torch.norm(test_pred_rot.view(-1,3,3) - test_out_rot, p='fro', dim=[1, 2]).cpu().numpy(),
-        "GEODESIC": utils.roma.rotmat_geodesic_distance(test_pred_rot.view(-1,3,3), test_out_rot).cpu().numpy(),
+        "CHORDAL": torch.norm(test_pred_rot.view(-1, 3, 3) - test_out_rot, p="fro", dim=[1, 2]).cpu().numpy(),
+        "GEODESIC": utils.roma.rotmat_geodesic_distance(test_pred_rot.view(-1, 3, 3), test_out_rot).cpu().numpy(),
     }
-    pickle.dump(metrics, open(result_path, 'wb'))
+    pickle.dump(metrics, open(result_path, "wb"))
 
     return metrics
 
@@ -179,13 +293,13 @@ def test(model: MLPNetPCD, dataset_test: PointCloudDataset, to_rot, out_path):
 def plot_single_seed(results_path, outputdir):
     datas = {}
     for f in os.listdir(results_path):
-        if f.endswith('.pkl'):
+        if f.endswith(".pkl"):
             metrics = pickle.load(open(f"{results_path}/{f}", "rb"))
             for metric, value in metrics.items():
                 if metric in datas:
-                    datas[metric][config_names[f.split('_results')[0]]] = value
+                    datas[metric][config_names[f.split("_results")[0]]] = value
                 else:
-                    datas[metric] = {config_names[f.split('_results')[0]]: value}
+                    datas[metric] = {config_names[f.split("_results")[0]]: value}
 
     plot_data(datas, outputdir)
 
@@ -193,70 +307,78 @@ def plot_single_seed(results_path, outputdir):
 def plot_data(datas, outputdir):
     import matplotlib.pyplot as plt
     import seaborn as sns
-    plt.style.use(f'{os.path.dirname(os.path.realpath(__file__))}/prettyplots.mplstyle')
-    sns.set_style('whitegrid')
-    plt.rcParams.update({'font.size': 7})
-    #plt.rcParams['figure.figsize'] = [8, 8]
 
-    colors = [(0.368, 0.507, 0.71), (0.881, 0.611, 0.142), (0.923, 0.386,0.209), (0.56, 0.692, 0.195),(0.528, 0.471, 0.701), (0.772, 0.432,0.102), (0.572, 0.586, 0.) ]
-    current_size = (5.6,2.1)
+    plt.style.use(f"{os.path.dirname(os.path.realpath(__file__))}/prettyplots.mplstyle")
+    sns.set_style("whitegrid")
+    plt.rcParams.update({"font.size": 7})
+    # plt.rcParams['figure.figsize'] = [8, 8]
+
+    colors = [
+        (0.368, 0.507, 0.71),
+        (0.881, 0.611, 0.142),
+        (0.923, 0.386, 0.209),
+        (0.56, 0.692, 0.195),
+        (0.528, 0.471, 0.701),
+        (0.772, 0.432, 0.102),
+        (0.572, 0.586, 0.0),
+    ]
+    current_size = (5.6, 2.1)
 
     os.makedirs(outputdir, exist_ok=True)
     for metric, data in datas.items():
-
-        sorttype = 'mean'  # Arrange boxes in plot by name or data mean
-        if sorttype == 'mean':
+        sorttype = "mean"  # Arrange boxes in plot by name or data mean
+        if sorttype == "mean":
             df = pd.DataFrame(data)
             df = df[df.mean().sort_values().index]
-        elif sorttype == 'name':
+        elif sorttype == "name":
             df = dict(sorted(data.items()))
 
         plt.figure().set_figheight(7)  # Reset figure
-        g = sns.boxplot(data=df, palette="Blues", orient='h', width=0.5, linewidth=1.5, fliersize=2.5, showmeans=False)
+        g = sns.boxplot(data=df, palette="Blues", orient="h", width=0.5, linewidth=1.5, fliersize=2.5, showmeans=False)
 
-        plt.xlabel(f'{metric} distance (rad)')
+        plt.xlabel(f"{metric} distance (rad)")
         plt.xlim(0.06, 1.1)
         plt.grid(True, which="both", axis="x", ls="--")
-        #plt.axvline(x=np.pi, color='k', linestyle='--', linewidth=1)
+        # plt.axvline(x=np.pi, color='k', linestyle='--', linewidth=1)
 
         plt.tight_layout()
 
-        xscale = 'log' # 'log' or 'linear'
-        if xscale == 'log':
-            plt.xscale('log')
-        elif xscale == 'linear':
-            plt.xscale('linear')
+        xscale = "log"  # 'log' or 'linear'
+        if xscale == "log":
+            plt.xscale("log")
+        elif xscale == "linear":
+            plt.xscale("linear")
 
-        plt.savefig(f'./{outputdir}/{metric}_pcd_results_{xscale}.png', dpi=300)
-        plt.savefig(f'./{outputdir}/{metric}_pcd_results_{xscale}.pdf')
+        plt.savefig(f"./{outputdir}/{metric}_pcd_results_{xscale}.png", dpi=300)
+        plt.savefig(f"./{outputdir}/{metric}_pcd_results_{xscale}.pdf")
         plt.close()
 
 
 def plot_over_seeds():
-    output_path = 'assets/pcd_results_over_seeds'
-    results_path = 'output/pcd_exp'
+    output_path = "assets/pcd_results_over_seeds"
+    results_path = "output/pcd_exp"
 
     result_folders = [f"{results_path}/{f}" for f in os.listdir(results_path) if os.path.isdir(f"{results_path}/{f}")]
 
     datas = {}
     for result_folder in result_folders:
         for f in os.listdir(result_folder):
-            if f.endswith('.pkl'):
+            if f.endswith(".pkl"):
                 metrics = pickle.load(open(f"{result_folder}/{f}", "rb"))
                 for metric, value in metrics.items():
                     if metric in datas:
-                        name = config_names[f.split('_results')[0]]
+                        name = config_names[f.split("_results")[0]]
                         if name in datas[metric]:
                             datas[metric][name].append(value.mean())
                         else:
                             datas[metric][name] = [value.mean()]
                     else:
-                        datas[metric] = {config_names[f.split('_results')[0]]: [value.mean()]}
+                        datas[metric] = {config_names[f.split("_results")[0]]: [value.mean()]}
     plot_data(datas, output_path)
 
 
 def train_for_all_cases(seeds=10):
-    out_dir = f'output/pcd_exp'
+    out_dir = f"output/pcd_exp"
     os.makedirs(out_dir, exist_ok=True)
     num_epochs = 100
     batch_size = 32
@@ -268,26 +390,24 @@ def train_for_all_cases(seeds=10):
             # SAME AS IN TRAIN.py (@JONAS)
             training_loss, postprocess_pred, to_rot, preprocess_target, in_shape, out_size = config
 
-            out_path = f'{out_dir}/{seed}/{key}'
-            #os.makedirs(out_path, exist_ok=True)
+            out_path = f"{out_dir}/{seed}/{key}"
+            # os.makedirs(out_path, exist_ok=True)
 
             # Train
             dataset_train = PointCloudDataset(mode="train", device=device)
             model = MLPNetPCD(in_size=in_shape, out_size=out_size).to(device, dtype=torch.float32)
             train(model, dataset_train, config, nb_epoch=num_epochs, batch_size=batch_size, out_path=out_path)
 
-
             # Test
             dataset_test = PointCloudDataset(mode="test", device=device)
             model = MLPNetPCD(in_size=in_shape, out_size=out_size).cuda()
             test(model, dataset_test, config.to_rot, out_path)
-
 
         # Plot
         # plot_single_seed(results_path=f"{out_dir}/{seed}", outputdir=f'assets/pcd_results/{seed}')
 
 
 if __name__ == "__main__":
-    #train_for_all_cases()
+    # train_for_all_cases()
 
     plot_over_seeds()

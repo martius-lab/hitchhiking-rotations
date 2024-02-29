@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 
 
-class DataGenerator:
+class CubeDataGenerator:
     def __init__(self, height: int, width: int):
         xml = """
         <mujoco>

@@ -19,21 +19,23 @@ def quaternion_to_rotmat(inp: torch.Tensor) -> torch.Tensor:
 def gramschmidt_to_rotmat(inp: torch.Tensor) -> torch.Tensor:
     return roma.special_gramschmidt(inp.reshape(-1, 3, 2))
 
+
 def symmetric_orthogonalization(x):
-  """Maps 9D input vectors onto SO(3) via symmetric orthogonalization.
+    """Maps 9D input vectors onto SO(3) via symmetric orthogonalization.
 
-  x: should have size [batch_size, 9]
+    x: should have size [batch_size, 9]
 
-  Output has size [batch_size, 3, 3], where each inner 3x3 matrix is in SO(3).
-  """
-  m = x.view(-1, 3, 3)
-  u, s, v = torch.svd(m)
-  vt = torch.transpose(v, 1, 2)
-  det = torch.det(torch.matmul(u, vt))
-  det = det.view(-1, 1, 1)
-  vt = torch.cat((vt[:, :2, :], vt[:, -1:, :] * det), 1)
-  r = torch.matmul(u, vt)
-  return r
+    Output has size [batch_size, 3, 3], where each inner 3x3 matrix is in SO(3).
+    """
+    m = x.view(-1, 3, 3)
+    u, s, v = torch.svd(m)
+    vt = torch.transpose(v, 1, 2)
+    det = torch.det(torch.matmul(u, vt))
+    det = det.view(-1, 1, 1)
+    vt = torch.cat((vt[:, :2, :], vt[:, -1:, :] * det), 1)
+    r = torch.matmul(u, vt)
+    return r
+
 
 def procrustes_to_rotmat(inp: torch.Tensor) -> torch.Tensor:
     return symmetric_orthogonalization(inp)
@@ -61,7 +63,6 @@ def rotmat_to_quaternion_rand_flip(base: torch.Tensor) -> torch.Tensor:
     #     # quats: (N, M, .., 4)
     #     # return augmented inputs and quats
     #     return (np.concatenate((quats, -quats), axis=0), *np.concatenate((ixs, ixs), axis=0))
-
 
     rep = roma.rotmat_to_unitquat(base)
     rand_flipping = torch.rand(base.shape[0]) > 0.5
@@ -98,8 +99,6 @@ def test_all():
     quat_hm = np.where(quat[:, 3:4] < 0, -quat, quat)
     rotvec = rs.as_rotvec()
 
-
-
     tr = lambda x: torch.from_numpy(x)
 
     # euler_to_rotmat
@@ -109,37 +108,10 @@ def test_all():
     print(np.allclose(gramschmidt_to_rotmat(tr(rot[:, :, :2])).numpy(), rot))
     print(np.allclose(procrustes_to_rotmat(tr(rot)).numpy(), rot))
 
-
-
     print(np.allclose(rotmat_to_euler(tr(rot)).numpy(), euler))
     print(np.allclose(rotmat_to_gramschmidt(tr(rot)).numpy(), rot[:, :, :2]))
     print(np.allclose(rotmat_to_procrustes(tr(rot)).numpy(), rot))
     print(np.allclose(rotmat_to_rotvec(tr(rot)).numpy(), rotvec))
 
-
     print(np.allclose(rotmat_to_quaternion_canonical(tr(rot)).numpy(), quat_hm))
     print(np.allclose(np.abs(rotmat_to_quaternion(tr(rot)).numpy()), np.abs(quat)))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

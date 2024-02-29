@@ -24,9 +24,9 @@ class CubeImageToPoseDataset(Dataset):
             self.imgs, self.quats = dic["imgs"], dic["quats"]
             print(f"Dataset file was loaded: {path}")
         else:
-            from .dataset_generation import DataGenerator
+            from .cube_data_generator import CubeDataGenerator
 
-            dg = DataGenerator(height=64, width=64)
+            dg = CubeDataGenerator(height=64, width=64)
             for i in range(dataset_size):
                 # TODO normalize data
                 self.imgs.append(torch.from_numpy(dg.render_img(quats[i])))
