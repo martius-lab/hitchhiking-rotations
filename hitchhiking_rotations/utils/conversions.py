@@ -1,3 +1,8 @@
+#                                                                               
+# Copyright (c) 2024, MPI-IS, Jonas Frey, Rene Geist, Mikel Zhobro.
+# All rights reserved. Licensed under the MIT license.
+# See LICENSE file in the project root for details.
+#                                                                               
 from .euler_helper import euler_angles_to_matrix, matrix_to_euler_angles
 import roma
 import torch
