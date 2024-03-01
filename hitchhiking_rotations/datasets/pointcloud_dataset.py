@@ -142,22 +142,23 @@ def create_dataset():
                 pointcloud = self.__preproc__(f)
             return {"pointcloud": pointcloud, "category": self.classes[category]}
 
-    path = Path(f"{HITCHHIKING_ROOT_DIR}/ModelNet40")
+    path = Path(f"{HITCHHIKING_ROOT_DIR}/assets/ModelNet40")
     data_path = Path(f"{HITCHHIKING_ROOT_DIR}/assets/datasets/pcd_dataset")
 
     if not path.exists() and not data_path.exists():
         url = "http://modelnet.cs.princeton.edu/ModelNet40.zip"
 
-        if not os.path.exists(path):
-            os.makedirs(path)
+        os.makedirs(path, exist_ok=True)
 
         # Bash command to download and extract only the "airplane" subfolder
-        bash_command = f"wget {url}"
-        os.system(bash_command)
+        bash_command = f"wget {url} -P {path}"
+        # os.system(bash_command)
         # unzip only the airplane subfolder
-        bash_command = f"unzip ModelNet40.zip ModelNet40/airplane/*"
+        zip_file = path / "ModelNet40.zip"
+        output_folder = path / "airplane/*"
+        bash_command = f"unzip {zip_file} {output_folder}"
         os.system(bash_command)
-        os.remove("ModelNet40.zip")
+        os.remove(zip_file)
 
     # 1. Create train and test point cloud in npy format
     data_path.mkdir_p()

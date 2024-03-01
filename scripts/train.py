@@ -100,6 +100,10 @@ for epoch in range(cfg_exp.epochs):
     for name, trainer in trainers.items():
         training_result[name + f"-epoch_{epoch}"] = copy.deepcopy(trainer.logger.modes)
 
+
+for name, trainer in trainers.items():
+    trainer.training_finish()
+
 # Perform testing
 for j, batch in enumerate(tqdm(test_dataloader, ncols=100, desc="Test-Epoch ")):
     x, target = batch

@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 from hitchhiking_rotations import utils
 from hitchhiking_rotations.models import MLPNetPCD
 from hitchhiking_rotations.datasets import PointCloudDataset
-
+from hitchhiking_rotations import HITCHHIKING_ROOT_DIR
 
 from collections import namedtuple
 
@@ -266,7 +266,7 @@ def train(model: MLPNetPCD, dataset_train: PointCloudDataset, conf: Config, nb_e
 
 @torch.no_grad()
 def test(model: MLPNetPCD, dataset_test: PointCloudDataset, to_rot, out_path):
-    result_path = f"./{out_path}_results.pkl"
+    result_path = out_path + "_results.pkl"
     if os.path.exists(result_path):
         print(f"Results {result_path} already computed")
         return pickle.load(open(result_path, "rb"))
@@ -308,7 +308,7 @@ def plot_data(datas, outputdir):
     import matplotlib.pyplot as plt
     import seaborn as sns
 
-    plt.style.use(f"{os.path.dirname(os.path.realpath(__file__))}/prettyplots.mplstyle")
+    plt.style.use(os.path.join(HITCHHIKING_ROOT_DIR, "assets", "prettyplots.mplstyle"))
     sns.set_style("whitegrid")
     plt.rcParams.update({"font.size": 7})
     # plt.rcParams['figure.figsize'] = [8, 8]
@@ -349,16 +349,16 @@ def plot_data(datas, outputdir):
         elif xscale == "linear":
             plt.xscale("linear")
 
-        plt.savefig(f"./{outputdir}/{metric}_pcd_results_{xscale}.png", dpi=300)
-        plt.savefig(f"./{outputdir}/{metric}_pcd_results_{xscale}.pdf")
+        plt.savefig(os.path.join(outputdir, f"{metric}_pcd_results_{xscale}.png"), dpi=300)
+        plt.savefig(os.path.join(outputdir, f"{metric}_pcd_results_{xscale}.pdf"))
         plt.close()
 
 
 def plot_over_seeds():
-    output_path = "assets/pcd_results_over_seeds"
-    results_path = "output/pcd_exp"
-
-    result_folders = [f"{results_path}/{f}" for f in os.listdir(results_path) if os.path.isdir(f"{results_path}/{f}")]
+    results_path = os.path.join(HITCHHIKING_ROOT_DIR, "results", "pcd_to_pose")
+    result_folders = [
+        os.path.join(results_path, f) for f in os.listdir(results_path) if os.path.isdir(os.path.join(results_path, f))
+    ]
 
     datas = {}
     for result_folder in result_folders:
@@ -374,11 +374,11 @@ def plot_over_seeds():
                             datas[metric][name] = [value.mean()]
                     else:
                         datas[metric] = {config_names[f.split("_results")[0]]: [value.mean()]}
-    plot_data(datas, output_path)
+    plot_data(datas, results_path)
 
 
 def train_for_all_cases(seeds=10):
-    out_dir = f"output/pcd_exp"
+    out_dir = os.path.join(HITCHHIKING_ROOT_DIR, "results", "pcd_to_pose")
     os.makedirs(out_dir, exist_ok=True)
     num_epochs = 100
     batch_size = 32
@@ -390,7 +390,7 @@ def train_for_all_cases(seeds=10):
             # SAME AS IN TRAIN.py (@JONAS)
             training_loss, postprocess_pred, to_rot, preprocess_target, in_shape, out_size = config
 
-            out_path = f"{out_dir}/{seed}/{key}"
+            out_path = os.path.join(out_dir, "seed", "key")
             # os.makedirs(out_path, exist_ok=True)
 
             # Train
@@ -408,6 +408,6 @@ def train_for_all_cases(seeds=10):
 
 
 if __name__ == "__main__":
-    # train_for_all_cases()
+    train_for_all_cases()
 
     plot_over_seeds()
