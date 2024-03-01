@@ -1,7 +1,7 @@
 from setuptools import find_packages
 from distutils.core import setup
 
-INSTALL_REQUIRES = ["numpy", "pip", "scipy", "scikit-learn", "matplotlib", "seaborn", "pytictac", "roma", "black"]
+INSTALL_REQUIRES = ["numpy", "pip", "scipy", "scikit-learn", "matplotlib", "seaborn", "pytictac", "roma", "black", "pyyaml", "hydra", "omegaconf", "tqdm", "hydra-core"]
 
 setup(
     name="hitchhiking_rotations",

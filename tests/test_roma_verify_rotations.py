@@ -2,7 +2,7 @@ import torch
 import roma
 import numpy as np
 from scipy.spatial.transform import Rotation as R
-from pose_estimation import euler_angles_to_matrix
+from hitchhiking_rotations.utils import euler_angles_to_matrix
 
 
 def test_roma_quaternion():

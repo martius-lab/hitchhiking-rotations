@@ -32,6 +32,7 @@ Code for ICML 2024: <a href="some_ariv_link" target="_blank">"Position Paper: Le
 ```shell
 git clone git@github.com:martius-lab/hitchhiking-rotations.git
 pip3 install -e ./
+pip3 install torch torchvision torchaudio
 ```
 
 # Experiments
