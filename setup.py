@@ -12,7 +12,6 @@ INSTALL_REQUIRES = [
     "roma",
     "black",
     "pyyaml",
-    "hydra",
     "omegaconf",
     "tqdm",
     "hydra-core",
