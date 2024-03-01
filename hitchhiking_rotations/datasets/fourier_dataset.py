@@ -3,11 +3,12 @@
 # All rights reserved. Licensed under the MIT license.
 # See LICENSE file in the project root for details.
 #                                                                               
-from .euler_helper import euler_angles_to_matrix, matrix_to_euler_angles
-from .conversions import *
-from .metrics import *
-from .logger import OrientationLogger
-from .trainer import Trainer
-from .loading import *
-from .helper import passthrough, flatten
-from .notation import RotRep
+from torch.utils.data import Dataset
+
+
+class PoseToFourierDataset(Dataset):
+    def __init__(self, mode, nb, nf, device):
+        pass
+
+    def __getitem__(self, idx):
+        return x, y

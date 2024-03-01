@@ -1,10 +1,15 @@
+#                                                                               
+# Copyright (c) 2024, MPI-IS, Jonas Frey, Rene Geist, Mikel Zhobro.
+# All rights reserved. Licensed under the MIT license.
+# See LICENSE file in the project root for details.
+#                                                                               
 import mujoco
 import torch
 import numpy as np
 from PIL import Image
 
 
-class DataGenerator:
+class CubeDataGenerator:
     def __init__(self, height: int, width: int):
         xml = """
         <mujoco>
