@@ -45,7 +45,7 @@ cd hitchhiking_rotations && black --line-length 120 ./
 ```
 ### Add License Headers
 ```shell
-pip3 install adheader
+pip3 install addheader
 # If your are using zsh otherwise remove \
 addheader hitchhiking_rotations -t .header.txt -p \*.py --sep-len 79 --comment='#' --sep=' '
 ```
