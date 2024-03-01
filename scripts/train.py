@@ -30,6 +30,7 @@ s = args.seed
 torch.manual_seed(s)
 np.random.seed(s)
 device = "cuda" if torch.cuda.is_available() else "cpu"
+validate_every_n = 5  # This parameter also scales the patience of the early_stopping
 
 if args.experiment == "cube_image_to_pose":
     cfg_exp = get_cfg_cube_image_to_pose(device)
@@ -60,9 +61,6 @@ test_dataloader = DataLoader(test_data, num_workers=0, batch_size=cfg_exp.batch_
 # Training loop
 training_result = {}
 for epoch in range(cfg_exp.epochs):
-    if cfg_exp.verbose:
-        print("\nEpoch: ", epoch)
-
     # Check if at least one trainer has not stopped based on early stopping
     continue_training = False
     for name, trainer in trainers.items():
@@ -76,7 +74,7 @@ for epoch in range(cfg_exp.epochs):
         trainer.logger.reset()
 
     # Perform training
-    for j, batch in enumerate(tqdm(train_dataloader, ncols=100, desc=f"Train-Epoch {epoch}")):
+    for j, batch in enumerate(bar := tqdm(train_dataloader, ncols=100, desc=f"Train-Epoch {epoch}")):
         x, target = batch
 
         for name, trainer in trainers.items():
@@ -85,21 +83,29 @@ for epoch in range(cfg_exp.epochs):
 
             trainer.train_batch(x.clone(), target.clone(), epoch)
 
-    # Perform validation
-    for j, batch in enumerate(tqdm(val_dataloader, ncols=100, desc=f"Val-Epoch   {epoch}")):
-        x, target = batch
+        if cfg_exp.verbose:
+            scores = [t.logger.get_score("train", "loss") for t in trainers.values()]
+            bar.set_postfix({"running_train_loss": np.array(scores).mean()})
+
+    if validate_every_n > 0 and epoch % validate_every_n == 0:
+        # Perform validation
+        for j, batch in enumerate(bar := tqdm(val_dataloader, ncols=100, desc=f"Val-Epoch   {epoch}")):
+            x, target = batch
+
+            for name, trainer in trainers.items():
+                trainer.test_batch(x.clone(), target.clone(), epoch, mode="val")
+
+        # Store results and update early stopping
+        for name, trainer in trainers.items():
+            trainer.validation_epoch_finish(epoch)
+            training_result[name + f"-epoch_{epoch}"] = copy.deepcopy(trainer.logger.modes)
 
         for name, trainer in trainers.items():
-            trainer.test_batch(x.clone(), target.clone(), epoch, mode="val")
+            training_result[name + f"-epoch_{epoch}"] = copy.deepcopy(trainer.logger.modes)
 
-    # Store results and update early stopping
-    for name, trainer in trainers.items():
-        trainer.validation_epoch_finish(epoch)
-        training_result[name + f"-epoch_{epoch}"] = copy.deepcopy(trainer.logger.modes)
-
-    for name, trainer in trainers.items():
-        training_result[name + f"-epoch_{epoch}"] = copy.deepcopy(trainer.logger.modes)
-
+        if cfg_exp.verbose:
+            scores = [t.logger.get_score("val", "loss") for t in trainers.values()]
+            bar.set_postfix({"running_val_loss": np.array(scores).mean()})
 
 for name, trainer in trainers.items():
     trainer.training_finish()
@@ -115,5 +121,11 @@ for name, trainer in trainers.items():
     training_result[name + "-test"] = copy.deepcopy(trainer.logger.modes)
 
 experiment_folder = os.path.join(HITCHHIKING_ROOT_DIR, "results", args.experiment)
+models_folder = os.path.join(HITCHHIKING_ROOT_DIR, "results", args.experiment, "models")
 os.makedirs(experiment_folder, exist_ok=True)
+os.makedirs(models_folder, exist_ok=True)
 save_pickle(training_result, os.path.join(experiment_folder, f"seed_{s}_result.npy"))
+
+for name, trainer in trainers.items():
+    p = os.path.join(models_folder, f"seed_{s}_{name}.pt")
+    torch.save(trainer.model.state_dict(), p)

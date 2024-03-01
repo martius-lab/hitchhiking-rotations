@@ -36,3 +36,7 @@ class OrientationLogger:
             for res in self.modes[mo].values():
                 res["sum"] = 0
                 res["count"] = 0
+
+    def get_score(self, mode, metric):
+        m = self.modes[mode][metric]
+        return m["sum"] / m["count"]

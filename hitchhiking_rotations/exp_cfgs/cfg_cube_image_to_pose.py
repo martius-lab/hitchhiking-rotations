@@ -10,9 +10,9 @@ def get_cfg_cube_image_to_pose(device):
     }
 
     return {
-        "verbose": False,
+        "verbose": True,
         "batch_size": 32,
-        "epochs": 5,
+        "epochs": 100,
         "training_data": {
             "_target_": "hitchhiking_rotations.datasets.CubeImageToPoseDataset",
             "mode": "train",
@@ -120,7 +120,7 @@ def get_cfg_cube_image_to_pose(device):
                     "model": "${model6}",
                 },
             },
-            "quat_chordal_distance": {
+            "quat_c_chordal_distance": {
                 **shared_trainer_cfg,
                 **{
                     "preprocess_target": "${u:passthrough}",
@@ -130,40 +130,40 @@ def get_cfg_cube_image_to_pose(device):
                     "model": "${model4}",
                 },
             },
-            "quat_cosine_distance": {
+            "quat_c_cosine_distance": {
                 **shared_trainer_cfg,
                 **{
-                    "preprocess_target": "${u:rotmat_to_quaternion}",
+                    "preprocess_target": "${u:rotmat_to_quaternion_canonical}",
                     "postprocess_pred_loss": "${u:passthrough}",
                     "postprocess_pred_logging": "${u:quaternion_to_rotmat}",
                     "loss": "${u:cosine_distance}",
                     "model": "${model4}",
                 },
             },
-            "quat_l2": {
+            "quat_c_l2": {
                 **shared_trainer_cfg,
                 **{
-                    "preprocess_target": "${u:rotmat_to_quaternion}",
+                    "preprocess_target": "${u:rotmat_to_quaternion_canonical}",
                     "postprocess_pred_loss": "${u:passthrough}",
                     "postprocess_pred_logging": "${u:quaternion_to_rotmat}",
                     "loss": "${u:l2}",
                     "model": "${model4}",
                 },
             },
-            "quat_l1": {
+            "quat_c_l1": {
                 **shared_trainer_cfg,
                 **{
-                    "preprocess_target": "${u:rotmat_to_quaternion}",
+                    "preprocess_target": "${u:rotmat_to_quaternion_canonical}",
                     "postprocess_pred_loss": "${u:passthrough}",
                     "postprocess_pred_logging": "${u:quaternion_to_rotmat}",
                     "loss": "${u:l1}",
                     "model": "${model4}",
                 },
             },
-            "quat_l2_dp": {
+            "quat_c_l2_dp": {
                 **shared_trainer_cfg,
                 **{
-                    "preprocess_target": "${u:rotmat_to_quaternion}",
+                    "preprocess_target": "${u:rotmat_to_quaternion_canonical}",
                     "postprocess_pred_loss": "${u:passthrough}",
                     "postprocess_pred_logging": "${u:quaternion_to_rotmat}",
                     "loss": "${u:l2_dp}",

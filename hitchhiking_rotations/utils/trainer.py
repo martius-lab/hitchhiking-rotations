@@ -2,7 +2,7 @@ import torch
 
 
 class EarlyStopper:
-    def __init__(self, model, patience=1, min_delta=0):
+    def __init__(self, model, patience, min_delta):
         self.patience = patience
         self.min_delta = min_delta
         self.counter = 0
@@ -52,7 +52,7 @@ class Trainer:
         self.model.to(device)
 
         if optimizer == "SGD":
-            self.opt = torch.optim.SGD(self.model.parameters(), lr=lr)
+            self.opt = torch.optim.SGD(self.model.parameters(), lr=lr, momentum=0.9)
         elif optimizer == "Adam":
             self.opt = torch.optim.Adam(self.model.parameters(), lr=lr, eps=1e-7, amsgrad=False)
         elif optimizer == "AdamW":
@@ -83,11 +83,7 @@ class Trainer:
         with torch.no_grad():
             pred_log = self.postprocess_pred_logging(pred)
             self.logger.log("train", epoch, pred_log, target, loss.item())
-
             self.nr_training_steps += 1
-            if self.verbose:
-                if self.nr_training_steps % 100 == 0:
-                    print(f"Step {self.nr_training_steps}: ", loss.item())
 
         return loss
 
@@ -106,9 +102,7 @@ class Trainer:
         self.logger.reset()
 
     def validation_epoch_finish(self, epoch):
-        metric = self.logger.modes["val"]["loss"]
-        score = metric["sum"] / metric["count"]
-        self.early_stopper.early_stop(score)
+        self.early_stopper.early_stop(self.logger.get_score("val", "loss"))
 
     def training_finish(self):
         self.model.load_state_dict(self.early_stopper.best_state_dict)
