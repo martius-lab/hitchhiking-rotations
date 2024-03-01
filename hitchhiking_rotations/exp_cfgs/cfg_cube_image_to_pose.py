@@ -10,7 +10,7 @@ def get_cfg_cube_image_to_pose(device):
     }
 
     return {
-        "verbose": True,
+        "verbose": False,
         "batch_size": 32,
         "epochs": 5,
         "training_data": {

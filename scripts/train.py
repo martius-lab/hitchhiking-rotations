@@ -10,6 +10,7 @@ from omegaconf import OmegaConf
 import torch
 from torch.utils.data import DataLoader
 import copy
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
 
@@ -19,7 +20,7 @@ parser.add_argument(
     "--experiment",
     type=str,
     choices=["cube_image_to_pose", "pose_to_cube_image", "pcd_to_pose"] + fourier_choices,
-    default="pcd_to_pose",
+    default="pose_to_cube_image",
     help="Experiment Configuration",
 )
 parser.add_argument("--seed", type=int, default=0, help="number of seeds")
@@ -28,7 +29,7 @@ args = parser.parse_args()
 s = args.seed
 torch.manual_seed(s)
 np.random.seed(s)
-device = "cuda"
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 if args.experiment == "cube_image_to_pose":
     cfg_exp = get_cfg_cube_image_to_pose(device)
@@ -36,7 +37,7 @@ if args.experiment == "cube_image_to_pose":
 elif args.experiment == "pose_to_cube_image":
     cfg_exp = get_cfg_pose_to_cube_image(device)
 
-elif args.experiment == "pose_to_fourier":
+elif args.experiment.find("pose_to_fourier") != -1:
     cfg_exp = get_cfg_pose_to_fourier(device, nf=seed, nb=int(arg.experiment.split("_")[-1]))
 
 elif args.experiment == "pcd_to_pose":
@@ -75,7 +76,7 @@ for epoch in range(cfg_exp.epochs):
         trainer.logger.reset()
 
     # Perform training
-    for j, batch in enumerate(train_dataloader):
+    for j, batch in enumerate(tqdm(train_dataloader, ncols=100, desc=f"Train-Epoch {epoch}")):
         x, target = batch
 
         for name, trainer in trainers.items():
@@ -85,7 +86,7 @@ for epoch in range(cfg_exp.epochs):
             trainer.train_batch(x.clone(), target.clone(), epoch)
 
     # Perform validation
-    for j, batch in enumerate(val_dataloader):
+    for j, batch in enumerate(tqdm(val_dataloader, ncols=100, desc=f"Val-Epoch   {epoch}")):
         x, target = batch
 
         for name, trainer in trainers.items():
@@ -93,14 +94,14 @@ for epoch in range(cfg_exp.epochs):
 
     # Store results and update early stopping
     for name, trainer in trainers.items():
-        metric = trainer.logger.modes["val"]["geodesic_distance"]
-        score = metric["sum"] / metric["count"]
+        trainer.validation_epoch_finish(epoch)
+        training_result[name + f"-epoch_{epoch}"] = copy.deepcopy(trainer.logger.modes)
 
-        trainer.early_stopper.early_stop(score)
+    for name, trainer in trainers.items():
         training_result[name + f"-epoch_{epoch}"] = copy.deepcopy(trainer.logger.modes)
 
 # Perform testing
-for j, batch in enumerate(test_dataloader):
+for j, batch in enumerate(tqdm(test_dataloader, ncols=100, desc="Test-Epoch ")):
     x, target = batch
     for name, trainer in trainers.items():
         trainer.test_batch(x.clone(), target.clone(), epoch, mode="test")

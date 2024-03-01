@@ -80,6 +80,10 @@ def rotmat_to_gramschmidt(base: torch.Tensor) -> torch.Tensor:
     return base[:, :, :2]
 
 
+def rotmat_to_gramschmidt_f(base: torch.Tensor) -> torch.Tensor:
+    return base[:, :, :2].reshape(-1, 6)
+
+
 def rotmat_to_procrustes(base: torch.Tensor) -> torch.Tensor:
     return base
 

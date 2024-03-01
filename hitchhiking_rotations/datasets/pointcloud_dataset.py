@@ -7,10 +7,10 @@ from hitchhiking_rotations import HITCHHIKING_ROOT_DIR
 
 class PointCloudDataset(Dataset):
     def __init__(self, mode, device):
-        path = f"{HITCHHIKING_ROOT_DIR}/assets/datasets/pcd_dataset"
-        pcd_path = f"{path}/{mode}_point_cloud.npy"  # N, Npcd, 3
-        rotated_pcd_path = f"{path}/rotated_{mode}_point_cloud.npy"
-        out_rot_path = f"{path}/{mode}_rotations.npy"
+        path = os.path.join(HITCHHIKING_ROOT_DIR, "assets", "datasets", "pcd_dataset")
+        pcd_path = os.path.join(path, f"{mode}_point_cloud.npy")  # N, Npcd, 3
+        rotated_pcd_path = os.path.join(path, f"rotated_{mode}_point_cloud.npy")
+        out_rot_path = os.path.join(path, f"{mode}_rotations.npy")
 
         if not os.path.exists(pcd_path) or not os.path.exists(rotated_pcd_path) or not os.path.exists(out_rot_path):
             print(f"Creating dataset for PCD-ModelNet-Airplane dataset...")

@@ -9,7 +9,7 @@ def get_cfg_pose_to_fourier(device, nb, nf):
     }
 
     return {
-        "verbose": True,
+        "verbose": False,
         "batch_size": 32,
         "epochs": 5,
         "training_data": {

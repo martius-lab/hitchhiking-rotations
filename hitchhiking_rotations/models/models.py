@@ -20,9 +20,9 @@ class MLP(nn.Module):
 
 
 class CNN(nn.Module):
-    def __init__(self, rotation_representation_dim, width, height):
+    def __init__(self, input_dim, width, height):
         super(CNN, self).__init__()
-        Z_DIM = rotation_representation_dim
+        Z_DIM = input_dim
         IMAGE_CHANNEL = 3
         Z_DIM = 10
         G_HIDDEN = 64
@@ -30,8 +30,8 @@ class CNN(nn.Module):
         D_HIDDEN = 64
 
         self.INP_SIZE = 5
-        self.rotation_representation_dim = rotation_representation_dim
-        self.inp = nn.Linear(self.rotation_representation_dim, self.INP_SIZE * self.INP_SIZE * 10)
+        self.input_dim = input_dim
+        self.inp = nn.Linear(self.input_dim, self.INP_SIZE * self.INP_SIZE * 10)
         self.seq = nn.Sequential(
             # input layer
             nn.ConvTranspose2d(Z_DIM, G_HIDDEN * 8, 4, 1, 0, bias=False),
@@ -90,6 +90,3 @@ class MLPNetPCD(nn.Module):
     def forward(self, x):
         out = self.net(x)
         return out
-
-
-# ------------------------------------------------------------------------------

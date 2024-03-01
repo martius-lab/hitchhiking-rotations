@@ -17,9 +17,17 @@ class OrientationLogger:
             self.modes[mo] = {}
             for me in metrics:
                 self.modes[mo][me] = {"count": 0, "sum": 0}
+            self.modes[mo]["loss"] = {"count": 0, "sum": 0}
 
-    def log(self, mode, epoch, pred, target):
-        for metric, res in self.modes[mode].items():
+        self.metrics = metrics
+
+    def log(self, mode, epoch, pred, target, loss):
+        # Always log loss
+        self.modes[mode]["loss"]["sum"] += loss
+        self.modes[mode]["loss"]["count"] += 1
+
+        for metric in self.metrics:
+            res = self.modes[mode][metric]
             res["sum"] += available_metrics[metric](pred, target).item()
             res["count"] += 1
 

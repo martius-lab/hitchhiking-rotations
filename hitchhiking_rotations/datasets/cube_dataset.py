@@ -17,12 +17,12 @@ class CubeImageToPoseDataset(Dataset):
         self.quats = torch.from_numpy(quats)
         self.imgs = []
 
-        path = join(HITCHHIKING_ROOT_DIR, "assets", "datasets", f"cube_dataset_{mode}.pkl")
+        path = join(HITCHHIKING_ROOT_DIR, "assets", "datasets", "cube_dataset", f"cube_dataset_{mode}.pkl")
 
         if os.path.exists(path):
             dic = load_pickle(path)
             self.imgs, self.quats = dic["imgs"], dic["quats"]
-            print(f"Dataset file was loaded: {path}")
+            print(f"Cube-Dataset {mode}-file loaded: {path}")
         else:
             from .cube_data_generator import CubeDataGenerator
 
@@ -32,7 +32,7 @@ class CubeImageToPoseDataset(Dataset):
                 self.imgs.append(torch.from_numpy(dg.render_img(quats[i])))
             dic = {"imgs": self.imgs, "quats": self.quats}
             save_pickle(dic, path)
-            print(f"Dataset file was created and saved: {path}")
+            print(f"Cube-Dataset {mode}-file created and saved: {path}")
 
         self.imgs = [i.to(device) for i in self.imgs]
         self.quats = self.quats.to(device)

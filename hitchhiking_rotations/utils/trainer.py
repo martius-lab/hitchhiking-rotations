@@ -2,7 +2,7 @@ import torch
 
 
 class EarlyStopper:
-    def __init__(self, patience=1, min_delta=0):
+    def __init__(self, model, patience=1, min_delta=0):
         self.patience = patience
         self.min_delta = min_delta
         self.counter = 0
@@ -51,7 +51,7 @@ class Trainer:
         if optimizer == "SGD":
             self.opt = torch.optim.SGD(self.model.parameters(), lr=lr)
         elif optimizer == "Adam":
-            self.opt = torch.optim.Adam(self.model.parameters(), lr=lr)
+            self.opt = torch.optim.Adam(self.model.parameters(), lr=lr, eps=1e-7, amsgrad=False)
         elif optimizer == "AdamW":
             self.opt = torch.optim.AdamW(self.model.parameters(), lr=lr)
 
@@ -60,9 +60,10 @@ class Trainer:
         self.nr_training_steps = 0
         self.nr_test_steps = 0
 
-        self.early_stopper = EarlyStopper(patience=10, min_delta=0)
+        self.early_stopper = EarlyStopper(model=self.model, patience=10, min_delta=0)
 
     def train_batch(self, x, target, epoch):
+        self.model.train()
         self.opt.zero_grad()
 
         with torch.no_grad():
@@ -78,7 +79,7 @@ class Trainer:
 
         with torch.no_grad():
             pred_log = self.postprocess_pred_logging(pred)
-            self.logger.log("train", epoch, pred_log, target)
+            self.logger.log("train", epoch, pred_log, target, loss.item())
 
             self.nr_training_steps += 1
             if self.verbose:
@@ -92,8 +93,16 @@ class Trainer:
         self.model.eval()
         x = self.preprocess_input(x)
         pred = self.model(x)
+        pred_loss = self.postprocess_pred_loss(pred)
+        pp_target = self.preprocess_target(target)
+        loss = self.loss(pred_loss, pp_target)
         pred_log = self.postprocess_pred_logging(pred)
-        self.logger.log(mode, epoch, pred_log, target)
+        self.logger.log(mode, epoch, pred_log, target, loss.item())
 
     def reset(self):
         self.logger.reset()
+
+    def validation_epoch_finish(self, epoch):
+        metric = self.logger.modes["val"]["loss"]
+        score = metric["sum"] / metric["count"]
+        self.early_stopper.early_stop(score)
