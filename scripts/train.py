@@ -1,6 +1,6 @@
 from hitchhiking_rotations import HITCHHIKING_ROOT_DIR
 from hitchhiking_rotations.utils import save_pickle
-from hitchhiking_rotations.exp_cfgs import get_cfg_pcd_to_pose, get_cfg_cube_image_to_pose, get_cfg_pose_to_cube_image
+from hitchhiking_rotations.cfgs import get_cfg_pcd_to_pose, get_cfg_cube_image_to_pose, get_cfg_pose_to_cube_image
 
 import numpy as np
 import argparse
