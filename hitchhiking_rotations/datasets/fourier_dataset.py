@@ -11,14 +11,16 @@ import roma
 from hitchhiking_rotations import HITCHHIKING_ROOT_DIR
 from hitchhiking_rotations.utils import save_pickle, load_pickle
 
+
 class PoseToFourierDataset(Dataset):
     """
     Loads data from fourier dataset
     """
-    def __init__(self, mode, dataset_size, device, nb, nf):
 
-        path = join(HITCHHIKING_ROOT_DIR, "assets", "datasets", "fourier_dataset",
-                    f"fourier_dataset_{mode}_nb{nb}_nf{nf}.pkl")
+    def __init__(self, mode, dataset_size, device, nb, nf):
+        path = join(
+            HITCHHIKING_ROOT_DIR, "assets", "datasets", "fourier_dataset", f"fourier_dataset_{mode}_nb{nb}_nf{nf}.pkl"
+        )
 
         if os.path.exists(path):
             dic = load_pickle(path)
@@ -39,9 +41,9 @@ class PoseToFourierDataset(Dataset):
     def __getitem__(self, idx):
         return roma.unitquat_to_rotmat(self.quats[idx]).type(torch.float32), self.features[idx]
 
-class random_fourier_function():
 
-    def __init__(self, n_basis, seed, A0=0., L=1.):
+class random_fourier_function:
+    def __init__(self, n_basis, seed, A0=0.0, L=1.0):
         np.random.seed(seed)
         self.L = L
         self.n_basis = n_basis
@@ -53,9 +55,13 @@ class random_fourier_function():
     def __call__(self, x):
         fFs = self.A0 / 2
         for k in range(len(self.A)):
-            fFs = (fFs + self.A[k] * np.cos((k + 1) * np.pi * np.matmul(self.matrix, x) / self.L) +
-                   self.B[k] * np.sin((k + 1) * np.pi * np.matmul(self.matrix, x) / self.L))
+            fFs = (
+                fFs
+                + self.A[k] * np.cos((k + 1) * np.pi * np.matmul(self.matrix, x) / self.L)
+                + self.B[k] * np.sin((k + 1) * np.pi * np.matmul(self.matrix, x) / self.L)
+            )
         return fFs
+
 
 def create_data(N_points, nb, seed):
     """
@@ -75,6 +81,7 @@ def create_data(N_points, nb, seed):
     features = np.apply_along_axis(four_func, 1, inputs)
     return rots.as_quat().astype(np.float32), features.astype(np.float32)
 
+
 def plot_fourier_data(rotations, features):
     import pandas as pd
     import seaborn as sns
@@ -90,6 +97,7 @@ def plot_fourier_data(rotations, features):
     g.map_diag(sns.kdeplot, lw=2)
     g.set(xlim=(-1.2, 1.2), ylim=(-1.2, 1.2))
     plt.show()
+
 
 if __name__ == "__main__":
     create_data(N_points=100, nb=2, seed=5)

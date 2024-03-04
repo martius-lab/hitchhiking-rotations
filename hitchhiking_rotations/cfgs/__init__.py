@@ -7,4 +7,3 @@ from .cfg_cube_image_to_pose import get_cfg_cube_image_to_pose
 from .cfg_pcd_to_pose import get_cfg_pcd_to_pose
 from .cfg_pose_to_cube_image import get_cfg_pose_to_cube_image
 from .cfg_pose_to_fourier import get_cfg_pose_to_fourier
-
