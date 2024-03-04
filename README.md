@@ -32,6 +32,7 @@ Code for ICML 2024: <a href="some_ariv_link" target="_blank">"Position Paper: Le
 ```shell
 git clone git@github.com:martius-lab/hitchhiking-rotations.git
 pip3 install -e ./
+pip3 install torch torchvision torchaudio
 ```
 
 # Experiments
@@ -45,7 +46,7 @@ cd hitchhiking_rotations && black --line-length 120 ./
 ```
 ### Add License Headers
 ```shell
-pip3 install adheader
+pip3 install addheader
 # If your are using zsh otherwise remove \
 addheader hitchhiking_rotations -t .header.txt -p \*.py --sep-len 79 --comment='#' --sep=' '
 ```

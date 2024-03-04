@@ -1,3 +1,8 @@
+#
+# Copyright (c) 2024, MPI-IS, Jonas Frey, Rene Geist, Mikel Zhobro.
+# All rights reserved. Licensed under the MIT license.
+# See LICENSE file in the project root for details.
+#
 import numpy as np
 import torch
 from torch import nn
@@ -20,9 +25,9 @@ class MLP(nn.Module):
 
 
 class CNN(nn.Module):
-    def __init__(self, rotation_representation_dim, width, height):
+    def __init__(self, input_dim, width, height):
         super(CNN, self).__init__()
-        Z_DIM = rotation_representation_dim
+        Z_DIM = input_dim
         IMAGE_CHANNEL = 3
         Z_DIM = 10
         G_HIDDEN = 64
@@ -30,8 +35,8 @@ class CNN(nn.Module):
         D_HIDDEN = 64
 
         self.INP_SIZE = 5
-        self.rotation_representation_dim = rotation_representation_dim
-        self.inp = nn.Linear(self.rotation_representation_dim, self.INP_SIZE * self.INP_SIZE * 10)
+        self.input_dim = input_dim
+        self.inp = nn.Linear(self.input_dim, self.INP_SIZE * self.INP_SIZE * 10)
         self.seq = nn.Sequential(
             # input layer
             nn.ConvTranspose2d(Z_DIM, G_HIDDEN * 8, 4, 1, 0, bias=False),
@@ -56,7 +61,6 @@ class CNN(nn.Module):
 
 
 class MLPNetPCD(nn.Module):
-
     def __init__(self, in_size, out_size):
         super(MLPNetPCD, self).__init__()
 
@@ -71,16 +75,13 @@ class MLPNetPCD(nn.Module):
             nn.Conv1d(256, 1024, kernel_size=1),
             self.LR,
             nn.MaxPool1d(kernel_size=in_size[1]),
-
             nn.Flatten(),
-
             nn.Linear(1024, 512),
             nn.Dropout(0.5),
             self.LR,
             nn.Linear(512, 512),
             nn.Dropout(0.3),
             self.LR,
-
             nn.Linear(512, out_size),
         )
 
@@ -88,10 +89,9 @@ class MLPNetPCD(nn.Module):
             if isinstance(m, nn.Linear) or isinstance(m, nn.Conv1d):
                 torch.nn.init.xavier_uniform_(m.weight)
                 m.bias.data.fill_(0.0)
+
         self.net.apply(init_weights)
 
     def forward(self, x):
         out = self.net(x)
         return out
-# ------------------------------------------------------------------------------
-

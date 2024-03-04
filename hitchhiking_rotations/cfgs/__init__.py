@@ -3,4 +3,6 @@
 # All rights reserved. Licensed under the MIT license.
 # See LICENSE file in the project root for details.
 #
-from .models import MLP, CNN, MLPNetPCD
+from .cfg_cube_image_to_pose import get_cfg_cube_image_to_pose
+from .cfg_pcd_to_pose import get_cfg_pcd_to_pose
+from .cfg_pose_to_cube_image import get_cfg_pose_to_cube_image
