@@ -1,6 +1,7 @@
 from hitchhiking_rotations import HITCHHIKING_ROOT_DIR
 from hitchhiking_rotations.utils import save_pickle
-from hitchhiking_rotations.cfgs import get_cfg_pcd_to_pose, get_cfg_cube_image_to_pose, get_cfg_pose_to_cube_image
+from hitchhiking_rotations.cfgs import (get_cfg_pcd_to_pose, get_cfg_cube_image_to_pose, get_cfg_pose_to_cube_image,
+                                        get_cfg_pose_to_fourier)
 
 import numpy as np
 import argparse
@@ -14,7 +15,7 @@ from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
 
-fourier_choices = ["pose_to_fourier_{idx}" for idx in range(1, 8)]
+fourier_choices = [f"pose_to_fourier_{idx}" for idx in range(1, 7)]
 
 parser.add_argument(
     "--experiment",
@@ -23,7 +24,9 @@ parser.add_argument(
     default="pose_to_cube_image",
     help="Experiment Configuration",
 )
-parser.add_argument("--seed", type=int, default=0, help="number of seeds")
+parser.add_argument("--seed", type=int, default=0,
+                    help="Random seed used during training, " +
+                         "for pose_to_fourier the seed is used to select the target function.")
 args = parser.parse_args()
 
 s = args.seed
@@ -39,7 +42,7 @@ elif args.experiment == "pose_to_cube_image":
     cfg_exp = get_cfg_pose_to_cube_image(device)
 
 elif args.experiment.find("pose_to_fourier") != -1:
-    cfg_exp = get_cfg_pose_to_fourier(device, nf=seed, nb=int(arg.experiment.split("_")[-1]))
+    cfg_exp = get_cfg_pose_to_fourier(device, nf=s, nb=int(args.experiment.split("_")[-1]))
 
 elif args.experiment == "pcd_to_pose":
     cfg_exp = get_cfg_pcd_to_pose(device)
