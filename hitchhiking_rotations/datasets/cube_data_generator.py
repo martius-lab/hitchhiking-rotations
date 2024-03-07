@@ -60,7 +60,7 @@ class CubeDataGenerator:
 
 
 if __name__ == "__main__":
-    dg = DataGenerator(64, 64)
+    dg = CubeDataGenerator(64, 64)
     img = dg.render_img(np.array([0, 0, 0, 1]))
 
     i1 = Image.fromarray(img)

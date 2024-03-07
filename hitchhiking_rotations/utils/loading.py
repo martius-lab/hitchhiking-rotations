@@ -68,6 +68,7 @@ def save_pickle(cfg, path: str):
         cfg (dict): Configuration
         path (str): File path
     """
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "wb") as file:
         pickle.dump(cfg, file, protocol=pickle.HIGHEST_PROTOCOL)
 
