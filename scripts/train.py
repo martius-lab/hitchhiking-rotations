@@ -1,7 +1,11 @@
 from hitchhiking_rotations import HITCHHIKING_ROOT_DIR
 from hitchhiking_rotations.utils import save_pickle
-from hitchhiking_rotations.cfgs import (get_cfg_pcd_to_pose, get_cfg_cube_image_to_pose, get_cfg_pose_to_cube_image,
-                                        get_cfg_pose_to_fourier)
+from hitchhiking_rotations.cfgs import (
+    get_cfg_pcd_to_pose,
+    get_cfg_cube_image_to_pose,
+    get_cfg_pose_to_cube_image,
+    get_cfg_pose_to_fourier,
+)
 
 import numpy as np
 import argparse
@@ -24,9 +28,12 @@ parser.add_argument(
     default="pose_to_cube_image",
     help="Experiment Configuration",
 )
-parser.add_argument("--seed", type=int, default=0,
-                    help="Random seed used during training, " +
-                         "for pose_to_fourier the seed is used to select the target function.")
+parser.add_argument(
+    "--seed",
+    type=int,
+    default=0,
+    help="Random seed used during training, " + "for pose_to_fourier the seed is used to select the target function.",
+)
 args = parser.parse_args()
 
 s = args.seed

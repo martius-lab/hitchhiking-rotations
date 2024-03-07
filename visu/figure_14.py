@@ -8,10 +8,14 @@ import pandas as pd
 from hitchhiking_rotations.utils import RotRep
 
 nb_max = 6
-nb_values = range(1, nb_max+1)
-files = [str(s) for nb in nb_values for s in Path(os.path.join(HITCHHIKING_ROOT_DIR, "results", f"pose_to_fourier_{nb}")).rglob("*result.npy")]
+nb_values = range(1, nb_max + 1)
+files = [
+    str(s)
+    for nb in nb_values
+    for s in Path(os.path.join(HITCHHIKING_ROOT_DIR, "results", f"pose_to_fourier_{nb}")).rglob("*result.npy")
+]
 
-#files = [str(s) for s in Path(os.path.join(HITCHHIKING_ROOT_DIR, "results", "pose_to_fourier_1")).rglob("*result.npy")]
+# files = [str(s) for s in Path(os.path.join(HITCHHIKING_ROOT_DIR, "results", "pose_to_fourier_1")).rglob("*result.npy")]
 results = [np.load(file, allow_pickle=True) for file in files]
 
 # trainer_name
@@ -69,23 +73,27 @@ plt.style.use(os.path.join(HITCHHIKING_ROOT_DIR, "assets", "prettyplots.mplstyle
 sns.set_style("whitegrid")
 plt.rcParams.update({"font.size": 11})
 
-plt.figure(figsize=(5.5,1.0))
-g = sns.catplot(data=df, x="basis", y="score",
-                hue="method",
-                kind="box",
-                palette='Greens',
-                flierprops={"markeredgecolor": "grey"},
-                height=7.,
-                aspect=2.0)
+plt.figure(figsize=(5.5, 1.0))
+g = sns.catplot(
+    data=df,
+    x="basis",
+    y="score",
+    hue="method",
+    kind="box",
+    palette="Greens",
+    flierprops={"markeredgecolor": "grey"},
+    height=7.0,
+    aspect=2.0,
+)
 
-sns.move_legend(g, "upper left", bbox_to_anchor=(.11, 0.98), ncol=3, title='Network input') # len(names)
+sns.move_legend(g, "upper left", bbox_to_anchor=(0.11, 0.98), ncol=3, title="Network input")  # len(names)
 
-for i in range(nb_max-1):
+for i in range(nb_max - 1):
     plt.axvline(0.5 + i, color="lightgrey", dashes=(2, 2))
 
 plt.xlabel(f"Error - {selected_metric}")
 plt.ylabel("")
-plt.yscale('log')
+plt.yscale("log")
 plt.tight_layout()
 
 out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", "figure_14.pdf")
