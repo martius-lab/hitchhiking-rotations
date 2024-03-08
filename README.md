@@ -18,10 +18,9 @@ Code for ICML 2024: <a href="some_ariv_link" target="_blank">"Position Paper: Le
 
 
 # Overview
-(repository overview)
-
-![assets/docs/torus_v5.pdf](assets/docs/torus_v5.pdf)
-      
+<p align="center" width="60%">
+  <img src="https://github.com/martius-lab/hitchhiking-rotations/blob/main/assets/docs/torus.png?raw=true" alt="Sublime's custom image"/>
+</p>   
 # Results
 (this may be optional)
 
