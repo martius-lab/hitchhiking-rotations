@@ -42,7 +42,7 @@ class PointCloudDataset(Dataset):
 def create_dataset():
     from torchvision import transforms
     import random
-    from path import Path
+    from pathlib import Path
     from tqdm import tqdm
     from scipy.spatial.transform import Rotation as R
 
@@ -147,28 +147,23 @@ def create_dataset():
                 pointcloud = self.__preproc__(f)
             return {"pointcloud": pointcloud, "category": self.classes[category]}
 
-    path = Path(f"{HITCHHIKING_ROOT_DIR}/assets/ModelNet40")
-    data_path = Path(f"{HITCHHIKING_ROOT_DIR}/assets/datasets/pcd_dataset")
-
-    if not path.exists() and not data_path.exists():
+    path = Path(f"{HITCHHIKING_ROOT_DIR}/assets/datasets/pcd_dataset")
+    path.mkdir(parents=True, exist_ok=True)
+    if not (path / "ModelNet40/airplane").exists():
+        # download
         url = "http://modelnet.cs.princeton.edu/ModelNet40.zip"
-
-        os.makedirs(path, exist_ok=True)
-
-        # Bash command to download and extract only the "airplane" subfolder
         bash_command = f"wget {url} -P {path}"
-        # os.system(bash_command)
-        # unzip only the airplane subfolder
-        zip_file = path / "ModelNet40.zip"
-        output_folder = path / "airplane/*"
-        bash_command = f"unzip {zip_file} {output_folder}"
         os.system(bash_command)
-        os.remove(zip_file)
+
+        # extract only airplane
+        zip_file = path / "ModelNet40.zip"
+        bash_command = f'unzip {zip_file} "ModelNet40/airplane/*" -d {path}'
+        os.system(bash_command)
+        # os.remove(zip_file)
 
     # 1. Create train and test point cloud in npy format
-    data_path.mkdir_p()
-    path_train = data_path / "train_point_cloud.npy"
-    path_test = data_path / "test_point_cloud.npy"
+    path_train = path / "train_point_cloud.npy"
+    path_test = path / "test_point_cloud.npy"
 
     # 1.1 Preprocessing involves sampling 3000 points from the mesh triangle surfaces and normalizing them
     print(f"Sampling and normalizing point clouds...")
@@ -176,20 +171,28 @@ def create_dataset():
 
     if not path_train.exists():
         print(f"Creating train point clouds...")
-        train_ds = PointCloudData(path, transform=train_transforms, folder="train", only_classes=["airplane"])
+        train_ds = PointCloudData(
+            path / "ModelNet40", transform=train_transforms, folder="train", only_classes=["airplane"]
+        )
         train_pcd = np.array([d["pointcloud"] for d in tqdm(train_ds)]).reshape(-1, 3000, 3)
         # train_pcd2 = np.array([d['pointcloud'] for d in tqdm(train_ds)]).reshape(-1, 3000, 3)
         # train_pcd = np.concatenate((train_pcd, train_pcd2), axis=0)
+        if train_pcd.shape[0] == 0:
+            raise ValueError("No point clouds found. Check the path")
         np.save(path_train, train_pcd)
     else:
         print(f"File {path_train} already exist")
 
     if not path_test.exists():
         print(f"Creating test point clouds...")
-        test_ds = PointCloudData(path, transform=train_transforms, folder="test", only_classes=["airplane"])
+        test_ds = PointCloudData(
+            path / "ModelNet40", transform=train_transforms, folder="test", only_classes=["airplane"]
+        )
         test_pcd = np.array([d["pointcloud"] for d in tqdm(test_ds)]).reshape(-1, 3000, 3)
         # test_pcd2  = np.array([d['pointcloud'] for d in tqdm(test_ds) ]).reshape(-1, 3000, 3)
         # test_pcd = np.concatenate((test_pcd, test_pcd2), axis=0)
+        if test_pcd.shape[0] == 0:
+            raise ValueError("No point clouds found. Check the path")
         np.save(path_test, test_pcd)
     else:
         print(f"File {path_test} already exist")
@@ -200,10 +203,10 @@ def create_dataset():
     train_pcd = np.load(path_train)
     test_pcd = np.load(path_test)
 
-    path_train_rotated = data_path / "rotated_train_point_cloud.npy"
-    path_train_rots = data_path / "train_rotations.npy"
-    path_test_rotated = data_path / "rotated_test_point_cloud.npy"
-    path_test_rots = data_path / "test_rotations.npy"
+    path_train_rotated = path / "rotated_train_point_cloud.npy"
+    path_train_rots = path / "train_rotations.npy"
+    path_test_rotated = path / "rotated_test_point_cloud.npy"
+    path_test_rots = path / "test_rotations.npy"
 
     if not (
         path_train_rotated.exists()
