@@ -17,7 +17,7 @@ Code for ICML 2024: <a href="some_ariv_link" target="_blank">"Position Paper: Le
 
 
 <p align="center" width="60%">
-<img src="assets/docs/overview_top.png" width="300px">
+<img src="assets/docs/overview_top.png" width="400px">
 </p>   
 
 # Overview
@@ -26,20 +26,18 @@ Our work discusses recent trends on neural network regression with 3D rotations.
 2) **Feature prediction:** Rotation representations are in the networks *input*
 
 <p align="center" width="60%">
-<img src="assets/docs/overview_bottom.png" width="300px">
+<img src="assets/docs/overview_bottom.png" width="400px">
 </p>
 
 While the *choice of loss function* is important for learning with rotations, we illustrate that the *choice of rotation representation* (e.g., Euler angles, exponential coordinates, axis-angle, quaternions) is absolutely crucial.
 
-<br />
-
 **Our recommendations for neural network regression with 3D rotations:**
 
-*Changing the loss does not fix discontinuities* representations with three or four parameters introduce discontinuities into the target function when rotations are in the output. The subsequent issues arising in learning the target function are not fixed using distance picking or computing distances in $\mathrm{SO}(3)$.
+- *Changing the loss does not fix discontinuities* representations with three or four parameters introduce discontinuities into the target function when rotations are in the output. The subsequent issues arising in learning the target function are not fixed using distance picking or computing distances in $\mathrm{SO}(3)$.
 
-*For rotation estimation* use $\mathbb{R}^9+\mathrm{SVD}$ or $\mathbb{R}^6+\mathrm{GSO}$. If the regression targets are only small rotations, using quaternions with a halfspace-map is a good option.
+- *For rotation estimation* use $\mathbb{R}^9+\mathrm{SVD}$ or $\mathbb{R}^6+\mathrm{GSO}$. If the regression targets are only small rotations, using quaternions with a halfspace-map is a good option.
 
-*For feature prediction* use $\mathbb{R}^9+\mathrm{SVD}$ or $\mathbb{R}^6+\mathrm{GSO}$. If under memory constraints, quaternions with a halfspace-map and data-augmentation are viable.
+- *For feature prediction* use $\mathbb{R}^9+\mathrm{SVD}$ or $\mathbb{R}^6+\mathrm{GSO}$. If under memory constraints, quaternions with a halfspace-map and data-augmentation are viable.
 
 > [!NOTE]  
 > To support these recommendations, we conducted several experiments and reproduced the results of previous works. The code of these experiments is available in this repository.
@@ -77,7 +75,8 @@ learning results that have been stored using [logger.py](hitchhiking_rotations/u
 
 **Data**
 
-The data is available here: [link](PUT-LINK-HERE)
+> [!NOTE]  
+> The data is available here: [link](PUT-LINK-HERE)
 
 To reproduce the paper's experiments, kindly download the data, and save it in the `assets/datasets` folder. If you want to generate new data, just delete the files in this folder.
 
