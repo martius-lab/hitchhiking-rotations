@@ -41,7 +41,6 @@ While the *choice of loss function* is important for learning with rotations, we
 > To support these recommendations, we conducted several experiments and reproduced the results of previous works.
 > To reproduce the paper's results, setup the environment as detailed in [Installation](#installation) and
 > follow the instructions in [Experiments](#experiments).
----
 
 # Installation
 (virtual environment or just list of dependencies) 
@@ -52,8 +51,6 @@ git clone git@github.com:martius-lab/hitchhiking-rotations.git
 pip3 install -e ./
 pip3 install torch torchvision torchaudio
 ```
-
----
 
 # Experiments
 All experiments are implemented in PyTorch. 
@@ -114,8 +111,6 @@ To reproduce the paper's figures, run the following commands:
 | Figure 16: MoCap data analysis     | TBD                                  |
 | Figure 17: Loss gradients          | `python visu/loss_gradients.py`      |
 
----
-
 # Development
 ### Code Formatting
 ```shell
@@ -128,8 +123,6 @@ pip3 install addheader
 # If your are using zsh otherwise remove \
 addheader hitchhiking_rotations -t .header.txt -p \*.py --sep-len 79 --comment='#' --sep=' '
 ```
-
----
 
 # Credits
 TBD
