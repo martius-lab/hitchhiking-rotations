@@ -45,8 +45,8 @@ df = pd.DataFrame.from_dict(df_res)
 
 if rename_and_filter:
     mapping = {
-        "r9": RotRep.SVD,
-        "r6": RotRep.GSO,
+        "r9_svo": RotRep.SVD,
+        "r6_gso": RotRep.GSO,
         "quat_c": RotRep.QUAT_C,
         "quat_rf": str(RotRep.QUAT) + "_rf",
         "rotvec": RotRep.EXP,

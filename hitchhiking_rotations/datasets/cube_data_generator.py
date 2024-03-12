@@ -15,15 +15,15 @@ class CubeDataGenerator:
         <mujoco>
             <worldbody>
                 <light name="top" pos="0 0 0"/>
-                <body name="cube" euler="0 0 0">
+                <body name="cube" euler="0 0 0" pos="0 0 0">
                 <joint type="ball" stiffness="0" damping="0" frictionloss="0" armature="0"/>
-                <geom type="box" size="0.1 0.1 0.1" pos="0 0 0" rgba="0.5 0.5 0.5 1"/>
-                <geom type="box" size="1 1 0.01" pos="0 0 0.9" rgba="1 0 0 1"/>
-                <geom type="box" size="1 1 0.01" pos="0 0 -0.99" rgba="0 0 1 1"/>
-                <geom type="box" size="0.01 1 1" pos="0.99 0 0" rgba="0 1 0 1"/>
-                <geom type="box" size="0.01 1 1" pos="-0.99 0 0" rgba="0 0.6 0.6 1"/>
-                <geom type="box" size="1 0.01 1" pos="0 0.99 0" rgba="0.6 0.6 0 1"/>
-                <geom type="box" size="1 0.01 1" pos="0 -0.99 0" rgba="0.6 0 0.6 1"/>
+                <geom type="box" size="0.1 0.1 0.1" pos="0     0      0" rgba="0.5 0.5 0.5 1"/>
+                <geom type="box" size="1 1 0.01"    pos="0     0      0.9" rgba="1 0 0 1"/>
+                <geom type="box" size="1 1 0.01"    pos="0     0      -0.99" rgba="0 0 1 1"/>
+                <geom type="box" size="0.01 1 1"    pos="0.99  0      0" rgba="0 1 0 1"/>
+                <geom type="box" size="0.01 1 1"    pos="-0.99 0      0" rgba="0 0.6 0.6 1"/>
+                <geom type="box" size="1 0.01 1"    pos="0     0.99   0" rgba="0.6 0.6 0 1"/>
+                <geom type="box" size="1 0.01 1"    pos="0     -0.99  0" rgba="0.6 0 0.6 1"/>
                 </body>
             </worldbody>  
         </mujoco>

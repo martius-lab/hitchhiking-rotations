@@ -37,8 +37,8 @@ for run in results:
 df = pd.DataFrame.from_dict(df_res)
 
 mapping = {
-    "r9": RotRep.SVD,
-    "r6": RotRep.GSO,
+    "r9_svd": RotRep.SVD,
+    "r6_gso": RotRep.GSO,
     "quat_c": RotRep.QUAT_C,
     "rotvec": RotRep.EXP,
     "euler": RotRep.EULER,

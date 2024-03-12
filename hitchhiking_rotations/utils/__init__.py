@@ -9,5 +9,5 @@ from .metrics import *
 from .logger import OrientationLogger
 from .trainer import Trainer
 from .loading import *
-from .helper import passthrough, flatten
+from .helper import passthrough, flatten, n_3x3
 from .notation import RotRep

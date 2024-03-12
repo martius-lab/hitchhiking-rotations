@@ -11,8 +11,11 @@ class RotRep(Enum):
     SVD = "$\mathbb{R}^9$+SVD"
     QUAT_C = "Quat$^+$"
     QUAT = "Quat"
+    QUAT_RF = "Quat+RF"
     EULER = "Euler"
     EXP = "Exp"
+    ROTMAT = "$\mathbb{R}^9$"
+    RSIX = "$\mathbb{R}^6$"
 
     def __str__(self):
         return "%s" % self.value

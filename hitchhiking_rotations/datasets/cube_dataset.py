@@ -55,3 +55,15 @@ class PoseToCubeImageDataset(CubeImageToPoseDataset):
 
     def __getitem__(self, idx):
         return roma.unitquat_to_rotmat(self.quats[idx]).type(torch.float32), self.imgs[idx].type(torch.float32) / 255
+
+
+if __name__ == "__main__":
+    from PIL import Image
+    import numpy as np
+    from hitchhiking_rotations import HITCHHIKING_ROOT_DIR
+
+    dataset = CubeImageToPoseDataset("train", 2048, "cpu")
+    for i in range(10):
+        img, quat = dataset[i]
+        img = Image.fromarray(np.uint8(img.cpu().numpy() * 255))
+        img.save(join(HITCHHIKING_ROOT_DIR, "results", f"example_img_{i}.png"))

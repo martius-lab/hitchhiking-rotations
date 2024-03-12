@@ -25,7 +25,7 @@ parser.add_argument(
     "--experiment",
     type=str,
     choices=["cube_image_to_pose", "pose_to_cube_image", "pcd_to_pose"] + fourier_choices,
-    default="pose_to_cube_image",
+    default="cube_image_to_pose",
     help="Experiment Configuration",
 )
 parser.add_argument(
@@ -93,9 +93,12 @@ for epoch in range(cfg_exp.epochs):
 
             trainer.train_batch(x.clone(), target.clone(), epoch)
 
-        if cfg_exp.verbose:
-            scores = [t.logger.get_score("train", "loss") for t in trainers.values()]
-            bar.set_postfix({"running_train_loss": np.array(scores).mean()})
+        try:
+            if cfg_exp.verbose:
+                scores = [t.logger.get_score("train", "loss") for t in trainers.values()]
+                bar.set_postfix({"running_train_loss": np.array(scores).mean()})
+        except:
+            pass
 
     if validate_every_n > 0 and epoch % validate_every_n == 0:
         # Perform validation
