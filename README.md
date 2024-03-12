@@ -21,26 +21,24 @@ Code for ICML 2024: <a href="some_ariv_link" target="_blank">"Position Paper: Le
 </p>   
 
 # Overview
-Our work discusses recent trends on neural network regression with 3D rotations. We consider two common cases of learning with rotations:
-1) **Rotation estimation:** Rotation representations are in the networks *output*
-2) **Feature prediction:** Rotation representations are in the networks *input*
+Our work discusses recent trends on neural network regression with 3D rotations.
 
 <p align="center" width="60%">
 <img src="assets/docs/overview_bottom.png" width="400px">
 </p>
 
-While the *choice of loss function* is important for learning with rotations, we illustrate that the *choice of rotation representation* (e.g., Euler angles, exponential coordinates, axis-angle, quaternions) is absolutely crucial.
+While the *choice of loss function* is important for learning with rotations, we illustrate that the *choice of rotation representation* (e.g., Euler angles, exponential coordinates, axis-angle, quaternions) is crucial.
 
 **Our recommendations for neural network regression with 3D rotations:**
 
-- *Changing the loss does not fix discontinuities* representations with three or four parameters introduce discontinuities into the target function when rotations are in the output. The subsequent issues arising in learning the target function are not fixed using distance picking or computing distances in $\mathrm{SO}(3)$.
+- **Changing the loss does not fix discontinuities** representations with three or four parameters introduce discontinuities into the target function when rotations are in the output. The subsequent issues arising in learning the target function are not fixed using distance picking or computing distances in $\mathrm{SO}(3)$.
 
-- *For rotation estimation* use $\mathbb{R}^9+\mathrm{SVD}$ or $\mathbb{R}^6+\mathrm{GSO}$. If the regression targets are only small rotations, using quaternions with a halfspace-map is a good option.
+- **For rotation estimation (rotations in model output)** use $\mathbb{R}^9+\mathrm{SVD}$ or $\mathbb{R}^6+\mathrm{GSO}$. If the regression targets are only small rotations, using quaternions with a halfspace-map is a good option.
 
-- *For feature prediction* use $\mathbb{R}^9+\mathrm{SVD}$ or $\mathbb{R}^6+\mathrm{GSO}$. If under memory constraints, quaternions with a halfspace-map and data-augmentation are viable.
+- **For feature prediction (rotations in model input)** use $\mathbb{R}^9+\mathrm{SVD}$ or $\mathbb{R}^6+\mathrm{GSO}$. If under memory constraints, quaternions with a halfspace-map and data-augmentation are viable.
 
 > [!NOTE]  
-> To support these recommendations, we conducted several experiments and reproduced the results of previous works. The code of these experiments is available in this repository.
+> To support these recommendations, we conducted several experiments and reproduced the results of previous works.
 > To reproduce the paper's results, setup the environment as detailed in [Installation](#installation) and
 > follow the instructions in [Experiments](#experiments).
 ---
@@ -59,28 +57,28 @@ pip3 install torch torchvision torchaudio
 
 # Experiments
 All experiments are implemented in PyTorch. 
-Except of experiment 3, all experiments use for training [train.py](scripts/train.py).
+Most experiments simply use [train.py](scripts/train.py).
 Depending on which command line arguments are passed (see below), 
-[train.py](scripts/train.py) runs different neural network regression tasks using [hydra](https://hydra.cc/).
+[train.py](scripts/train.py) runs different neural network regression tasks via [hydra](https://hydra.cc/).
 
 The repo is organized as follows:
 
-- [./hitchhiking_rotations](hitchhiking_rotations) contains config files, data generators, loss functions, data loaders, and models.
+- [./hitchhiking_rotations](hitchhiking_rotations) contains rotation representation helper functions, config files, data generators, loss functions, data loaders, and models.
 - [./assets/datasets](assets/datasets) contains the datasets used in the experiments. 
-By default, the data inside the folders (same as in the paper) is used to train models. 
-- If you want to generate new data, just delete the files in this folder.
+By default, the data inside the folders is used to train models. If you want to generate new data using the scripts in [hitchhiking_rotations/datasets](hitchhiking_rotations/datasets), just delete the files in this folder.
 - [./assets/results](assets/results) contains trained models, plots, and
 learning results that have been stored using [logger.py](hitchhiking_rotations/utils/logger.py).
 - [./visu](hitchhiking_rotations/visu) contains scripts to visualize the results of the experiments and reproduce figures.
 
-**Data**
+### Data
+
+To reproduce the paper's experiments, download the data, and save it in the `assets/datasets` folder.
 
 > [!NOTE]  
 > The data is available here: [link](PUT-LINK-HERE)
 
-To reproduce the paper's experiments, kindly download the data, and save it in the `assets/datasets` folder. If you want to generate new data, just delete the files in this folder.
 
-**Experiment 1, 2.1, and 2.2**
+### Experiment 1, 2.1, and 2.2
 
 | **Experiment**                 | **Type**            | `<EXPERIMENT-NAME>`    |
 |--------------------------------|---------------------|------------------------|
@@ -92,16 +90,16 @@ To reproduce the paper's experiments, kindly download the data, and save it in t
 python scripts/train.py --experiment <EXPERIMENT-NAME>
 ```
 
-**Experiment 3: 6D object pose estimation** 
+### Experiment 3: 6D object pose estimation
 
 Experiment 3 has its own [repository](PUT-LINK-HERE).
 
-**Experiment 4: SO(3) as input to Fourier series**
+### Experiment 4: SO(3) as input to Fourier series
 ```console
 for nb in {1..5}; do for seed in {1..20}; do python scripts/train.py --seed $seed --experiment "pose_to_fourier_$nb"; done; done
 ```
 
-**Plots**
+### Plots
 
 To reproduce the paper's figures, run the following commands:
 
