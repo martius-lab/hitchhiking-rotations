@@ -9,7 +9,6 @@ Code for ICML 2024: <a href="some_ariv_link" target="_blank">"Position Paper: Le
 
 <p align="center">
   <a href="#overview">Overview</a> •
-  <a href="#results">Results</a> •
   <a href="#installation">Installation</a> •
   <a href="#experiments">Experiments</a> •
   <a href="#development">Development</a> •
@@ -21,6 +20,7 @@ Code for ICML 2024: <a href="some_ariv_link" target="_blank">"Position Paper: Le
 <img src="assets/docs/overview_top.png" width="300px">
 </p>   
 
+# Overview
 Our work discusses recent trends on neural network regression with 3D rotations. We consider two common cases of learning with rotations:
 1) **Rotation estimation:** Rotation representations are in the networks *output*
 2) **Feature prediction:** Rotation representations are in the networks *input*
@@ -35,31 +35,16 @@ While the *choice of loss function* is important for learning with rotations, we
 
 **Our recommendations for neural network regression with 3D rotations:**
 
-<div style="margin-left: 50px;">
-<img align="right" src="assets/docs/torus.png" width="180px">
-</div>
-
-*Changing the loss does not fix discontinuities* representations with three or four parameters introduce discontinuities into the target function. The subsequent issues arising in learning the target function are not fixed using distance picking or computing distances in $\mathrm{SO}(3)$.
-
-<br />
-
-<div style="margin-right: 100px;">
-<img align="left" src="assets/docs/rotation_estimation.png" width="250px">
-</div>
+*Changing the loss does not fix discontinuities* representations with three or four parameters introduce discontinuities into the target function when rotations are in the output. The subsequent issues arising in learning the target function are not fixed using distance picking or computing distances in $\mathrm{SO}(3)$.
 
 *For rotation estimation* use $\mathbb{R}^9+\mathrm{SVD}$ or $\mathbb{R}^6+\mathrm{GSO}$. If the regression targets are only small rotations, using quaternions with a halfspace-map is a good option.
 
-<br />
-
-<img align="right" src="assets/docs/feature_prediction.png" width="200px">
-
 *For feature prediction* use $\mathbb{R}^9+\mathrm{SVD}$ or $\mathbb{R}^6+\mathrm{GSO}$. If under memory constraints, quaternions with a halfspace-map and data-augmentation are viable.
-
-<br />
 
 > [!NOTE]  
 > To support these recommendations, we conducted several experiments and reproduced the results of previous works. The code of these experiments is available in this repository.
-
+> To reproduce the paper's results, setup the environment as detailed in [Installation](#installation) and
+> follow the instructions in [Experiments](#experiments).
 ---
 
 # Installation
@@ -88,7 +73,6 @@ By default, the data inside the folders (same as in the paper) is used to train 
 - If you want to generate new data, just delete the files in this folder.
 - [./assets/results](assets/results) contains trained models, plots, and
 learning results that have been stored using [logger.py](hitchhiking_rotations/utils/logger.py).
-] .
 - [./visu](hitchhiking_rotations/visu) contains scripts to visualize the results of the experiments and reproduce figures.
 
 **Data**
@@ -118,7 +102,7 @@ Experiment 3 has its own [repository](PUT-LINK-HERE).
 for nb in {1..5}; do for seed in {1..20}; do python scripts/train.py --seed $seed --experiment "pose_to_fourier_$nb"; done; done
 ```
 
-**Reproducing plots**
+**Plots**
 
 To reproduce the paper's figures, run the following commands:
 
@@ -148,3 +132,7 @@ pip3 install addheader
 addheader hitchhiking_rotations -t .header.txt -p \*.py --sep-len 79 --comment='#' --sep=' '
 ```
 
+---
+
+# Credits
+TBD
