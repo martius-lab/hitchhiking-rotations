@@ -17,12 +17,50 @@ Code for ICML 2024: <a href="some_ariv_link" target="_blank">"Position Paper: Le
 </p>
 
 
-# Overview
 <p align="center" width="60%">
-  <img src="https://github.com/martius-lab/hitchhiking-rotations/blob/main/assets/docs/torus.png?raw=true" alt="Sublime's custom image"/>
+<img src="assets/docs/overview_top.png" width="300px">
 </p>   
-# Results
-(this may be optional)
+
+Our work discusses recent trends on neural network regression with 3D rotations. We consider two common cases of learning with rotations:
+1) **Rotation estimation:** Rotation representations are in the networks *output*
+2) **Feature prediction:** Rotation representations are in the networks *input*
+
+<p align="center" width="60%">
+<img src="assets/docs/overview_bottom.png" width="300px">
+</p>
+
+While the *choice of loss function* is important for learning with rotations, we illustrate that the *choice of rotation representation* (e.g., Euler angles, exponential coordinates, axis-angle, quaternions) is absolutely crucial.
+
+<br />
+
+**Our recommendations for neural network regression with 3D rotations:**
+
+<div style="margin-left: 50px;">
+<img align="right" src="assets/docs/torus.png" width="180px">
+</div>
+
+*Changing the loss does not fix discontinuities* representations with three or four parameters introduce discontinuities into the target function. The subsequent issues arising in learning the target function are not fixed using distance picking or computing distances in $\mathrm{SO}(3)$.
+
+<br />
+
+<div style="margin-right: 100px;">
+<img align="left" src="assets/docs/rotation_estimation.png" width="250px">
+</div>
+
+*For rotation estimation* use $\mathbb{R}^9+\mathrm{SVD}$ or $\mathbb{R}^6+\mathrm{GSO}$. If the regression targets are only small rotations, using quaternions with a halfspace-map is a good option.
+
+<br />
+
+<img align="right" src="assets/docs/feature_prediction.png" width="200px">
+
+*For feature prediction* use $\mathbb{R}^9+\mathrm{SVD}$ or $\mathbb{R}^6+\mathrm{GSO}$. If under memory constraints, quaternions with a halfspace-map and data-augmentation are viable.
+
+<br />
+
+> [!NOTE]  
+> To support these recommendations, we conducted several experiments and reproduced the results of previous works. The code of these experiments is available in this repository.
+
+---
 
 # Installation
 (virtual environment or just list of dependencies) 
@@ -34,8 +72,68 @@ pip3 install -e ./
 pip3 install torch torchvision torchaudio
 ```
 
+---
+
 # Experiments
-List of each experiment as in paper and how to reproduce it
+All experiments are implemented in PyTorch. 
+Except of experiment 3, all experiments use for training [train.py](scripts/train.py).
+Depending on which command line arguments are passed (see below), 
+[train.py](scripts/train.py) runs different neural network regression tasks using [hydra](https://hydra.cc/).
+
+The repo is organized as follows:
+
+- [./hitchhiking_rotations](hitchhiking_rotations) contains config files, data generators, loss functions, data loaders, and models.
+- [./assets/datasets](assets/datasets) contains the datasets used in the experiments. 
+By default, the data inside the folders (same as in the paper) is used to train models. 
+- If you want to generate new data, just delete the files in this folder.
+- [./assets/results](assets/results) contains trained models, plots, and
+learning results that have been stored using [logger.py](hitchhiking_rotations/utils/logger.py).
+] .
+- [./visu](hitchhiking_rotations/visu) contains scripts to visualize the results of the experiments and reproduce figures.
+
+**Data**
+
+The data is available here: [link](PUT-LINK-HERE)
+
+To reproduce the paper's experiments, kindly download the data, and save it in the `assets/datasets` folder. If you want to generate new data, just delete the files in this folder.
+
+**Experiment 1, 2.1, and 2.2**
+
+| **Experiment**                 | **Type**            | `<EXPERIMENT-NAME>`    |
+|--------------------------------|---------------------|------------------------|
+| 1: Rotation from point clouds  | Rotation estimation | `"pcd_to_pose"`        |
+| 2.1: Cube rotation from images | Rotation estimation | `"cube_image_to_pose"` |
+| 2.2: Cube rotation to images   | Feature prediction  | `"pose_to_cube_image"` |
+
+```console
+python scripts/train.py --experiment <EXPERIMENT-NAME>
+```
+
+**Experiment 3: 6D object pose estimation** 
+
+Experiment 3 has its own [repository](PUT-LINK-HERE).
+
+**Experiment 4: SO(3) as input to Fourier series**
+```console
+for nb in {1..5}; do for seed in {1..20}; do python scripts/train.py --seed $seed --experiment "pose_to_fourier_$nb"; done; done
+```
+
+**Reproducing plots**
+
+To reproduce the paper's figures, run the following commands:
+
+| **Figures**                        | **Console command**                  |
+|------------------------------------|--------------------------------------|
+| Experiment 1                       | TBD                                  |
+| Experiment 2.1                     | `python visu/figure12a.py`           |
+| Experiment 2.2                     | `python visu/figure12b.py`           |
+| Experiment 3                       | TBD                                  |
+| Experiment 4                       | `python visu/figure14.py`            |
+| Figure 6 & 18: Lipschitz constants | `python visu/lipschitz_constants.py` |
+| Figure 16: MoCap data analysis     | TBD                                  |
+| Figure 17: Loss gradients          | `python visu/loss_gradients.py`      |
+
+---
 
 # Development
 ### Code Formatting
@@ -49,16 +147,4 @@ pip3 install addheader
 # If your are using zsh otherwise remove \
 addheader hitchhiking_rotations -t .header.txt -p \*.py --sep-len 79 --comment='#' --sep=' '
 ```
-
-## TODO
-- Add the headers
-- Change version to 1.0.0 if done
-- Make Logger work (only works if r9 now) and store results
-- Experiments to do: Check normalization of quat helpfull ?
-- Experiments to do: l2 should be same as chordal for r9 ? 
-- Test Geodesic Distance
-- Write in general for everything tests ideally
-- Add plotting scripts
-
-# Credits
 
