@@ -20,7 +20,7 @@ def get_cfg_pose_to_cube_image(device):
     return {
         "verbose": False,
         "batch_size": 128,
-        "epochs": 100,
+        "epochs": 1000,
         "training_data": {
             "_target_": "hitchhiking_rotations.datasets.PoseToCubeImageDataset",
             "mode": "train",
