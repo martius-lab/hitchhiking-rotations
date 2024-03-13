@@ -45,8 +45,8 @@ df = pd.DataFrame.from_dict(df_res)
 
 if rename_and_filter:
     mapping = {
-        "r9_svo": RotRep.SVD,
-        "r6_gso": RotRep.GSO,
+        "r9": RotRep.ROTMAT,
+        "r6": RotRep.RSIX,
         "quat_c": RotRep.QUAT_C,
         "quat_rf": str(RotRep.QUAT) + "_rf",
         "rotvec": RotRep.EXP,
@@ -66,8 +66,8 @@ plt.figure(figsize=(7, 2.5))
 plt.subplot(1, 1, 1)
 
 
-sns.boxplot(data=df, x="score", y="method", palette="Blues", orient="h", width=0.5, linewidth=1.5, fliersize=2.5)
-plt.xlabel(f"Error - {selected_metric}")
+sns.boxplot(data=df, x="score", y="method", palette="Greens", orient="h", width=0.5, linewidth=1.5, fliersize=2.5)
+plt.xlabel("Error - MSE")
 plt.ylabel("")
 plt.tight_layout()
 

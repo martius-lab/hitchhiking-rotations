@@ -47,18 +47,15 @@ def load_yaml(path: str) -> dict:
 
 
 def load_pickle(path: str) -> dict:
-    """Loads yaml file
-
+    """Load pickle file
     Args:
         path (str): File path
-
     Returns:
         (dict): Returns content of file
     """
-    with open(path) as file:
+
+    with open(path, "rb") as file:
         res = pickle.load(file)
-    if res is None:
-        res = {}
     return res
 
 
