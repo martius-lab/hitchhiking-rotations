@@ -185,6 +185,16 @@ def get_cfg_cube_image_to_pose(device):
                     "model": "${model6}",
                 },
             },
+            "quat_c_geodesic_distance": {
+                **shared_trainer_cfg,
+                **{
+                    "preprocess_target": "${u:passthrough}",
+                    "postprocess_pred_loss": "${u:quaternion_to_rotmat}",
+                    "postprocess_pred_logging": "${u:quaternion_to_rotmat}",
+                    "loss": "${u:geodesic_distance}",
+                    "model": "${model4}",
+                },
+            },
             "quat_c_chordal_distance": {
                 **shared_trainer_cfg,
                 **{

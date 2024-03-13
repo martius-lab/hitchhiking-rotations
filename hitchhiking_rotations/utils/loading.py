@@ -6,6 +6,7 @@
 import os
 import yaml
 import pickle
+from omegaconf import OmegaConf
 
 __all__ = ["file_path", "load_yaml", "load_pickle", "save_pickle", "save_omega_cfg"]
 
@@ -71,21 +72,6 @@ def save_pickle(cfg, path: str):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "wb") as file:
         pickle.dump(cfg, file, protocol=pickle.HIGHEST_PROTOCOL)
-
-
-def load_pickle(path: str) -> dict:
-    """Load pickle file
-
-    Args:
-        path (str): File path
-
-    Returns:
-        (dict): Returns content of file
-    """
-
-    with open(path, "rb") as file:
-        res = pickle.load(file)
-    return res
 
 
 def save_omega_cfg(cfg, path):

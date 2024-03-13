@@ -7,7 +7,6 @@ from hitchhiking_rotations import HITCHHIKING_ROOT_DIR
 from hitchhiking_rotations.utils import save_pickle, load_pickle
 import os
 from os.path import join
-import pickle
 from scipy.spatial.transform import Rotation
 import torch
 import roma
@@ -60,7 +59,6 @@ class PoseToCubeImageDataset(CubeImageToPoseDataset):
 if __name__ == "__main__":
     from PIL import Image
     import numpy as np
-    from hitchhiking_rotations import HITCHHIKING_ROOT_DIR
 
     dataset = CubeImageToPoseDataset("train", 2048, "cpu")
     for i in range(10):

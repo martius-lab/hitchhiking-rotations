@@ -3,10 +3,8 @@
 # All rights reserved. Licensed under the MIT license.
 # See LICENSE file in the project root for details.
 #
-import numpy as np
 import torch
 from torch import nn
-import torch.nn.functional as F
 
 
 class MLP(nn.Module):
@@ -31,8 +29,6 @@ class CNN(nn.Module):
         IMAGE_CHANNEL = 3
         Z_DIM = 10
         G_HIDDEN = 64
-        X_DIM = 64
-        D_HIDDEN = 64
 
         self.INP_SIZE = 5
         self.input_dim = input_dim
