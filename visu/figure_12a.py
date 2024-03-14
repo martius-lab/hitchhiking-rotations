@@ -37,8 +37,8 @@ for run in results:
 df = pd.DataFrame.from_dict(df_res)
 
 mapping = {
-    "r9": RotRep.SVD,
-    "r6": RotRep.GSO,
+    "r9_svd": RotRep.SVD,
+    "r6_gso": RotRep.GSO,
     "quat_c": RotRep.QUAT_C,
     "rotvec": RotRep.EXP,
     "euler": RotRep.EULER,
@@ -56,8 +56,18 @@ plt.figure(figsize=(7, 2.5))
 plt.subplot(1, 1, 1)
 
 
-sns.boxplot(data=df, x="score", y="method", palette="Blues", orient="h", width=0.5, linewidth=1.5, fliersize=2.5)
-plt.xlabel(f"Error - {selected_metric}")
+sns.boxplot(
+    data=df,
+    x="score",
+    y="method",
+    palette="Blues",
+    orient="h",
+    width=0.5,
+    linewidth=1.5,
+    fliersize=2.5,
+    showfliers=True,
+)
+plt.xlabel("Error - Geodesic Distance")
 plt.ylabel("")
 plt.tight_layout()
 

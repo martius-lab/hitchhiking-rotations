@@ -7,8 +7,6 @@ from .euler_helper import euler_angles_to_matrix, matrix_to_euler_angles
 import roma
 import torch
 
-# x to rotmat
-
 
 def euler_to_rotmat(inp: torch.Tensor) -> torch.Tensor:
     return euler_angles_to_matrix(inp.reshape(-1, 3), convention="XZY")

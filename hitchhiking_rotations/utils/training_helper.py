@@ -7,6 +7,7 @@ from enum import Enum
 import numpy as np
 import argparse
 import torch
+from torch.utils.data import Dataset
 
 
 def default(*x):
@@ -142,7 +143,7 @@ def get_loss_and_fout(loss: TrainingLoss, representation: Representation):
             TrainingLoss.QUAT_CP,
         ], f"Loss {loss} not supported for representation {representation}"
         if loss == TrainingLoss.CHORDIAL:
-            print(f"Cordial loss for rotations is the same as L2 loss. Using default L2 loss")
+            print("Cordial loss for rotations is the same as L2 loss. Using default L2 loss")
             loss = TrainingLoss.L2
 
     if representation in [Representation.QUAT, Representation.QUAT_AUG, Representation.QUAT_HM]:
@@ -172,9 +173,6 @@ def test_parsing():
     print(get_loss_and_fout(TrainingLoss.CHORDIAL, Representation.QUAT) == (chordial_loss, quat_to_rotmat))
     print(get_loss_and_fout(TrainingLoss.CHORDIAL, Representation.AXIS_ANGLE) == (chordial_loss, axis_angle_to_rotmat))
     print(get_loss_and_fout(TrainingLoss.GEODESIC, Representation.EULER) == (geodesic_loss, euler_to_rotmat))
-
-
-from torch.utils.data import Dataset, DataLoader
 
 
 class PointCloudDataset(Dataset):
@@ -220,6 +218,7 @@ def test_dataset():
     out_rots_path = f"{data_path}/train_rotations.npy"
 
     dataset = PointCloudDataset(pcd_path, rotate_path, out_rots_path, args.representation)
+    print(dataset[0])
 
 
 if __name__ == "__main__":

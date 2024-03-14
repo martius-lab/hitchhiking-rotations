@@ -42,6 +42,12 @@ List of each experiment as in paper and how to reproduce it
 ```shell
 pip3 install black==23.10
 cd hitchhiking_rotations && black --line-length 120 ./
+
+# Using precommit
+pip3 install pre-commit
+cd hitchhiking_rotations && python3 -m pre_commit install
+cd hitchhiking_rotations && python3 -m pre_commit run
+
 ```
 ### Add License Headers
 ```shell

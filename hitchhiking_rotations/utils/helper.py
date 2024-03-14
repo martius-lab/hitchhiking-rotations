@@ -11,3 +11,7 @@ def passthrough(*x):
 
 def flatten(x):
     return x.reshape(x.shape[0], -1)
+
+
+def n_3x3(x):
+    return x.reshape(-1, 3, 3)
