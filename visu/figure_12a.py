@@ -56,7 +56,17 @@ plt.figure(figsize=(7, 2.5))
 plt.subplot(1, 1, 1)
 
 
-sns.boxplot(data=df, x="score", y="method", palette="Blues", orient="h", width=0.5, linewidth=1.5, fliersize=2.5)
+sns.boxplot(
+    data=df,
+    x="score",
+    y="method",
+    palette="Blues",
+    orient="h",
+    width=0.5,
+    linewidth=1.5,
+    fliersize=2.5,
+    showfliers=True,
+)
 plt.xlabel("Error - Geodesic Distance")
 plt.ylabel("")
 plt.tight_layout()

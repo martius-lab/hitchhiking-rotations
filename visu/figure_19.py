@@ -8,7 +8,6 @@ import pandas as pd
 from hitchhiking_rotations.utils import RotRep
 
 plt.figure(figsize=(14, 14))
-plt.subplot(1, 2, 1)
 plt.style.use(os.path.join(HITCHHIKING_ROOT_DIR, "assets", "prettyplots.mplstyle"))
 sns.set_style("whitegrid")
 plt.rcParams.update({"font.size": 11})
@@ -65,10 +64,10 @@ for j, selected_metric in enumerate(["geodesic_distance", "chordal_distance"]):
         "quat_c_l2": str(RotRep.QUAT_C) + "-MSE",
         "quat_c_l1": str(RotRep.QUAT_C) + "-MAE",
         "  ": "  ",
-        "quat_rf_cosine_distance": str(RotRep.QUAT_RF) + "-CD",
+        # "quat_rf_cosine_distance": str(RotRep.QUAT_RF) + "-CD",
         "quat_rf_l2_dp": str(RotRep.QUAT_RF) + "-MSE-DP",
-        "quat_rf_l2": str(RotRep.QUAT_RF) + "-MSE",
-        "quat_rf_l1": str(RotRep.QUAT_RF) + "-MAE",
+        # "quat_rf_l2": str(RotRep.QUAT_RF) + "-MSE",
+        # "quat_rf_l1": str(RotRep.QUAT_RF) + "-MAE",
         "   ": "   ",
         "rotvec_geodesic_distance": str(RotRep.EXP) + "-Geo",
         "rotvec_chordal_distance": str(RotRep.EXP) + "-Chordal",
@@ -82,19 +81,36 @@ for j, selected_metric in enumerate(["geodesic_distance", "chordal_distance"]):
     }
 
     for k, v in mapping.items():
-        df["method"][df["method"] == k] = v
+        df.loc[df["method"] == k, "method"] = v
 
     df["method"] = pd.Categorical(df["method"], categories=[v for v in mapping.values()], ordered=True)
 
-    # plt.figure(figsize=(7, 10))
-    # plt.subplot(1, 1, 1)
+    plt.subplot(1, 2, j + 1)
 
-    if j == 1:
-        plt.subplot(1, 2, 2, sharey=plt.subplot(1, 2, 1))
+    sns.boxplot(
+        data=df,
+        x="score",
+        y="method",
+        palette="Blues",
+        orient="h",
+        width=0.5,
+        linewidth=1.5,
+        fliersize=2.5,
+        showfliers=False,
+    )
 
-    sns.boxplot(data=df, x="score", y="method", palette="Blues", orient="h", width=0.5, linewidth=1.5, fliersize=2.5)
-    plt.xlabel(f"Error - {selected_metric}")
+    # plt.xlabel(f"Error - {selected_metric}")
+
+    if j == 0:
+        plt.xlabel(f"Error - Geodesic distance")
+        print("Warning: Hardcoded label for the first plot. Please check if it is correct.")
+        print(f"Geodesic distance VS {selected_metric}")
+    elif j == 1:
+        plt.xlabel(f"Error - Chordal distance")
+        print("Warning: Hardcoded label for the first plot. Please check if it is correct.")
+        print(f"Chordal distance VS {selected_metric}")
     plt.ylabel("")
+    # plt.xscale("log")
     plt.tight_layout()
 
 out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", "cube_image_to_pose", f"figure_19_combined.pdf")
