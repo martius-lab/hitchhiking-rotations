@@ -78,6 +78,13 @@ def rotmat_to_quaternion_canonical(base: torch.Tensor) -> torch.Tensor:
     rep[rep[:, 3] < 0] *= -1
     return rep
 
+def augment_quaternions(base: torch.Tensor, target: torch.Tensor) -> (torch.Tensor, torch.Tensor):
+    rep = roma.rotmat_to_unitquat(base)
+    rep[rep[:, 3] < 0] *= -1  # Flip to get canonical quaternions
+    idxs = torch.nonzero(rep[:, 3] < 0.1)
+    rep_aug = torch.cat((rep, -1 * rep[idxs]), 0)  # All quaternions with scalar < 0.1 are again mirrored and added to the data
+    target_aug = torch.cat((target, target[idxs]), 0)  # Mirrored quaternions need a target
+    return rep_aug, target_aug
 
 def rotmat_to_gramschmidt(base: torch.Tensor) -> torch.Tensor:
     return base[:, :, :2]

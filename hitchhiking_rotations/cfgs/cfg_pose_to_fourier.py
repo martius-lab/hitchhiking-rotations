@@ -11,6 +11,7 @@ def get_cfg_pose_to_fourier(device, nb, nf):
         "logger": "${logger}",
         "verbose": "${verbose}",
         "device": device,
+        "augment_data": "${u:passthrough}",
         "preprocess_target": "${u:passthrough}",
         "postprocess_pred_loss": "${u:passthrough}",
         "postprocess_pred_logging": "${u:passthrough}",
@@ -56,6 +57,8 @@ def get_cfg_pose_to_fourier(device, nb, nf):
         "trainers": {
             "r9_l2": {**cfg, **{"preprocess_input": "${u:flatten}", "model": "${model9}"}},
             "r6_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_gramschmidt_f}", "model": "${model6}"}},
+            "quat_aug_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_quaternion_canonical}",
+                                      "augment_data": "${u:augment_quaternions}", "model": "${model4}"}},
             "quat_c_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_quaternion_canonical}", "model": "${model4}"}},
             "quat_rf_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_quaternion_rand_flip}", "model": "${model4}"}},
             "euler_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_euler}", "model": "${model3}"}},

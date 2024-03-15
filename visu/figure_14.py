@@ -59,6 +59,7 @@ if rename_and_filter:
     mapping = {
         "r9": RotRep.SVD,
         "r6": RotRep.GSO,
+        "quat_aug": str(RotRep.QUAT_C) + "_aug",
         "quat_c": RotRep.QUAT_C,
         "quat_rf": str(RotRep.QUAT) + "_rf",
         "rotvec": RotRep.EXP,

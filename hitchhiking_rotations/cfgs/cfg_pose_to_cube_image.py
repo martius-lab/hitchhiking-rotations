@@ -11,6 +11,7 @@ def get_cfg_pose_to_cube_image(device):
         "logger": "${logger}",
         "verbose": "${verbose}",
         "device": device,
+        "augment_data": "${u:passthrough}",
         "preprocess_target": "${u:passthrough}",
         "postprocess_pred_loss": "${u:passthrough}",
         "postprocess_pred_logging": "${u:passthrough}",

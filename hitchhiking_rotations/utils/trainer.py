@@ -34,6 +34,7 @@ class Trainer:
         self,
         preprocess_target,
         preprocess_input,
+        augment_data,
         postprocess_pred_loss,
         postprocess_pred_logging,
         loss,
@@ -46,6 +47,7 @@ class Trainer:
     ):
         self.preprocess_target = preprocess_target
         self.preprocess_input = preprocess_input
+        self.augment_data = augment_data
         self.postprocess_pred_loss = postprocess_pred_loss
         self.postprocess_pred_logging = postprocess_pred_logging
         self.loss = loss
