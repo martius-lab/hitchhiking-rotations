@@ -78,13 +78,13 @@ def rotmat_to_quaternion_aug(base: torch.Tensor) -> torch.Tensor:
     scalar part is smaller than 0.1 after multiplication by -1. Such an augmentation actually
     increases the size of the dataset.
 
-    However, we get the same effect by randomly selecting half of the quaternions in the current batch
+    However, we get the same effect by randomly selecting some quaternions in the current batch
     for which the scalar part is smaller than 0.1. and multiplying these by -1.
     """
     rep = rotmat_to_quaternion_canonical(base)
     idxs = torch.arange(rep.size(0), device=rep.device)[rep[:, 3] < 0.1]
-    N = idxs.size(0)
-    random_indices = torch.randperm(N)[: (N // 2)]
+    num_rows_to_flip = torch.randint(0, idxs.size(0) + 1, (1,)).item()
+    random_indices = torch.randperm(idxs.size(0), device=rep.device)[:num_rows_to_flip]
     selected_idxs = idxs[random_indices]
     rep[selected_idxs] *= -1
     return rep
