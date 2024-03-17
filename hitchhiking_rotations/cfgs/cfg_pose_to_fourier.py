@@ -11,7 +11,6 @@ def get_cfg_pose_to_fourier(device, nb, nf):
         "logger": "${logger}",
         "verbose": "${verbose}",
         "device": device,
-        "augment_data": "${u:passthrough}",
         "preprocess_target": "${u:passthrough}",
         "postprocess_pred_loss": "${u:passthrough}",
         "postprocess_pred_logging": "${u:passthrough}",
@@ -21,7 +20,7 @@ def get_cfg_pose_to_fourier(device, nb, nf):
     return {
         "verbose": False,
         "batch_size": 64,
-        "epochs": 400,
+        "epochs": 500,
         "training_data": {
             "_target_": "hitchhiking_rotations.datasets.PoseToFourierDataset",
             "mode": "train",
@@ -46,10 +45,10 @@ def get_cfg_pose_to_fourier(device, nb, nf):
             "nb": nb,
             "nf": nf,
         },
-        "model9": {"_target_": "hitchhiking_rotations.models.MLP2", "input_dim": 9, "output_dim": 1},
-        "model6": {"_target_": "hitchhiking_rotations.models.MLP2", "input_dim": 6, "output_dim": 1},
-        "model4": {"_target_": "hitchhiking_rotations.models.MLP2", "input_dim": 4, "output_dim": 1},
-        "model3": {"_target_": "hitchhiking_rotations.models.MLP2", "input_dim": 3, "output_dim": 1},
+        "model9": {"_target_": "hitchhiking_rotations.models.MLP", "input_dim": 9, "output_dim": 1},
+        "model6": {"_target_": "hitchhiking_rotations.models.MLP", "input_dim": 6, "output_dim": 1},
+        "model4": {"_target_": "hitchhiking_rotations.models.MLP", "input_dim": 4, "output_dim": 1},
+        "model3": {"_target_": "hitchhiking_rotations.models.MLP", "input_dim": 3, "output_dim": 1},
         "logger": {
             "_target_": "hitchhiking_rotations.utils.OrientationLogger",
             "metrics": ["l2"],
@@ -57,8 +56,13 @@ def get_cfg_pose_to_fourier(device, nb, nf):
         "trainers": {
             "r9_l2": {**cfg, **{"preprocess_input": "${u:flatten}", "model": "${model9}"}},
             "r6_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_gramschmidt_f}", "model": "${model6}"}},
-            "quat_aug_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_quaternion_canonical}",
-                                      "augment_data": "${u:augment_quaternions}", "model": "${model4}"}},
+            "quat_aug_l2": {
+                **cfg,
+                **{
+                    "preprocess_input": "${u:rotmat_to_quaternion_aug}",
+                    "model": "${model4}",
+                },
+            },
             "quat_c_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_quaternion_canonical}", "model": "${model4}"}},
             "quat_rf_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_quaternion_rand_flip}", "model": "${model4}"}},
             "euler_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_euler}", "model": "${model3}"}},

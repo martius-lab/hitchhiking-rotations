@@ -61,12 +61,6 @@ def rotmat_to_quaternion(base: torch.Tensor) -> torch.Tensor:
 
 
 def rotmat_to_quaternion_rand_flip(base: torch.Tensor) -> torch.Tensor:
-    # we could duplicate the data and flip the quaternions on both sides
-    # def quat_aug_dataset(quats: np.ndarray, ixs):
-    #     # quats: (N, M, .., 4)
-    #     # return augmented inputs and quats
-    #     return (np.concatenate((quats, -quats), axis=0), *np.concatenate((ixs, ixs), axis=0))
-
     rep = roma.rotmat_to_unitquat(base)
     rand_flipping = torch.rand(base.shape[0]) > 0.5
     rep[rand_flipping] *= -1
@@ -78,13 +72,23 @@ def rotmat_to_quaternion_canonical(base: torch.Tensor) -> torch.Tensor:
     rep[rep[:, 3] < 0] *= -1
     return rep
 
-def augment_quaternions(base: torch.Tensor, target: torch.Tensor) -> (torch.Tensor, torch.Tensor):
-    rep = roma.rotmat_to_unitquat(base)
-    rep[rep[:, 3] < 0] *= -1  # Flip to get canonical quaternions
-    idxs = torch.nonzero(rep[:, 3] < 0.1)
-    rep_aug = torch.cat((rep, -1 * rep[idxs]), 0)  # All quaternions with scalar < 0.1 are again mirrored and added to the data
-    target_aug = torch.cat((target, target[idxs]), 0)  # Mirrored quaternions need a target
-    return rep_aug, target_aug
+
+def rotmat_to_quaternion_aug(base: torch.Tensor) -> torch.Tensor:
+    """A quaternion data set can be augmented by adding to the data all canonical quaternions whose
+    scalar part is smaller than 0.1 after multiplication by -1. Such an augmentation actually
+    increases the size of the dataset.
+
+    However, we get the same effect by randomly selecting half of the quaternions in the current batch
+    for which the scalar part is smaller than 0.1. and multiplying these by -1.
+    """
+    rep = rotmat_to_quaternion_canonical(base)
+    idxs = torch.arange(rep.size(0), device=rep.device)[rep[:, 3] < 0.1]
+    N = idxs.size(0)
+    random_indices = torch.randperm(N)[: (N // 2)]
+    selected_idxs = idxs[random_indices]
+    rep[selected_idxs] *= -1
+    return rep
+
 
 def rotmat_to_gramschmidt(base: torch.Tensor) -> torch.Tensor:
     return base[:, :, :2]
