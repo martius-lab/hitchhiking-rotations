@@ -6,7 +6,7 @@
 def get_cfg_pose_to_fourier(device, nb, nf):
     cfg = {
         "_target_": "hitchhiking_rotations.utils.Trainer",
-        "lr": 0.01,
+        "lr": 0.001,
         "optimizer": "Adam",
         "logger": "${logger}",
         "verbose": "${verbose}",
@@ -21,7 +21,7 @@ def get_cfg_pose_to_fourier(device, nb, nf):
     return {
         "verbose": False,
         "batch_size": 64,
-        "epochs": 400,
+        "epochs": 600,
         "training_data": {
             "_target_": "hitchhiking_rotations.datasets.PoseToFourierDataset",
             "mode": "train",
