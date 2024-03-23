@@ -20,7 +20,7 @@ def get_cfg_pose_to_fourier(device, nb, nf):
     return {
         "verbose": False,
         "batch_size": 64,
-        "epochs": 500,
+        "epochs": 400,
         "training_data": {
             "_target_": "hitchhiking_rotations.datasets.PoseToFourierDataset",
             "mode": "train",
@@ -45,10 +45,10 @@ def get_cfg_pose_to_fourier(device, nb, nf):
             "nb": nb,
             "nf": nf,
         },
-        "model9": {"_target_": "hitchhiking_rotations.models.MLP", "input_dim": 9, "output_dim": 1},
-        "model6": {"_target_": "hitchhiking_rotations.models.MLP", "input_dim": 6, "output_dim": 1},
-        "model4": {"_target_": "hitchhiking_rotations.models.MLP", "input_dim": 4, "output_dim": 1},
-        "model3": {"_target_": "hitchhiking_rotations.models.MLP", "input_dim": 3, "output_dim": 1},
+        "model9": {"_target_": "hitchhiking_rotations.models.MLP2", "input_dim": 9, "output_dim": 1},
+        "model6": {"_target_": "hitchhiking_rotations.models.MLP2", "input_dim": 6, "output_dim": 1},
+        "model4": {"_target_": "hitchhiking_rotations.models.MLP2", "input_dim": 4, "output_dim": 1},
+        "model3": {"_target_": "hitchhiking_rotations.models.MLP2", "input_dim": 3, "output_dim": 1},
         "logger": {
             "_target_": "hitchhiking_rotations.utils.OrientationLogger",
             "metrics": ["l2"],
