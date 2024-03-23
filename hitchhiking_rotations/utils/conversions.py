@@ -74,12 +74,9 @@ def rotmat_to_quaternion_canonical(base: torch.Tensor) -> torch.Tensor:
 
 
 def rotmat_to_quaternion_aug(base: torch.Tensor) -> torch.Tensor:
-    """A quaternion data set can be augmented by adding to the data all canonical quaternions whose
-    scalar part is smaller than 0.1 after multiplication by -1. Such an augmentation actually
-    increases the size of the dataset.
-
-    However, we get the same effect by randomly selecting some quaternions in the current batch
-    for which the scalar part is smaller than 0.1. and multiplying these by -1.
+    """Performs memory-efficient quaternion augmentation by randomly
+    selecting some quaternions in the batch for which the scalar part
+    is smaller than 0.1 then multiply the selected quaternions by -1.
     """
     rep = rotmat_to_quaternion_canonical(base)
     idxs = torch.arange(rep.size(0), device=rep.device)[rep[:, 3] < 0.1]

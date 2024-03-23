@@ -87,6 +87,8 @@ g = sns.catplot(
     aspect=2.0,
 )
 
+g.map(sns.stripplot, "basis", "score", "method", dodge=True, alpha=0.6)
+
 sns.move_legend(g, "upper left", bbox_to_anchor=(0.11, 0.98), ncol=3, title="Network input")  # len(names)
 
 for i in range(nb_max - 1):
