@@ -79,7 +79,7 @@ sub_timings = np.array([timing_result[k] for k in method_names])
 means = sub_timings.mean(axis=1)
 
 # Create stacked bar plot
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(12, 6))
 
 bar_width = 0.8
 
@@ -96,9 +96,6 @@ plots = []
 bottom = np.zeros(len(method_names))
 
 colors = plt.get_cmap("tab20b")([0, 2, 4, 6, 8, 10, 12])
-
-
-# colors = plt.get_cmap('Greens')(np.linspace(0.0, 1.0, sub_timings.shape[2]))
 
 subtiming_labels = [
     "preprocess_input",
@@ -120,10 +117,11 @@ ax.set_title("Timing Results")
 ax.set_xticks(index)
 ax.set_xticklabels(method_names)
 ax.legend()
-plt.show()
-
 
 experiment_folder = os.path.join(HITCHHIKING_ROOT_DIR, "results", "image_to_pose_timing")
 os.makedirs(experiment_folder, exist_ok=True)
+out_p = os.path.join(experiment_folder, "rebutal_timing_network.pdf")
+plt.savefig(out_p)
 
-save_pickle(timing_result, os.path.join(experiment_folder, f"seed_{s}_result.npy"))
+save_pickle(timing_result, os.path.join(experiment_folder, f"seed_{s}_timing_network.npy"))
+plt.show()

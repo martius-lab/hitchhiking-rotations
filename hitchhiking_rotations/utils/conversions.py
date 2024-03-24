@@ -97,6 +97,7 @@ def rotmat_to_rotvec(base: torch.Tensor) -> torch.Tensor:
 
 def test_all():
     from scipy.spatial.transform import Rotation
+    from torch import from_numpy as tr
     import numpy as np
 
     rs = Rotation.random(1000)
@@ -105,8 +106,6 @@ def test_all():
     quat = rs.as_quat()
     quat_hm = np.where(quat[:, 3:4] < 0, -quat, quat)
     rotvec = rs.as_rotvec()
-
-    tr = lambda x: torch.from_numpy(x)
 
     # euler_to_rotmat
     print(np.allclose(euler_to_rotmat(tr(euler)).numpy(), rot))
