@@ -144,6 +144,7 @@ class Trainer:
         _ = self.postprocess_pred_logging(pred)  # Step 5
         torch.cuda.synchronize()
         t6.record()
+        torch.cuda.synchronize()
 
         return [
             t0.elapsed_time(t1),
