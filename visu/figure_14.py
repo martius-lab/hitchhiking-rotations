@@ -57,13 +57,13 @@ df = pd.DataFrame.from_dict(df_res)
 
 if rename_and_filter:
     mapping = {
-        "r9": RotRep.SVD,
-        "r6": RotRep.GSO,
-        "quat_aug": str(RotRep.QUAT_C) + "_aug",
-        "quat_c": RotRep.QUAT_C,
-        "quat_rf": str(RotRep.QUAT) + "_rf",
-        "rotvec": RotRep.EXP,
         "euler": RotRep.EULER,
+        "rotvec": RotRep.EXP,
+        "quat_rf": str(RotRep.QUAT) + "_rf",
+        "quat_c": RotRep.QUAT_C,
+        "quat_aug": str(RotRep.QUAT_C) + "_aug",
+        "r6": RotRep.GSO,
+        "r9": RotRep.SVD,
     }
 
     training_metric = "l2"
@@ -87,7 +87,7 @@ g = sns.catplot(
     aspect=2.0,
 )
 
-g.map(sns.stripplot, "basis", "score", "method", dodge=True, alpha=0.6)
+# g.map(sns.stripplot, "basis", "score", "method", dodge=True, alpha=0.6)
 
 sns.move_legend(g, "upper left", bbox_to_anchor=(0.11, 0.98), ncol=3, title="Network input")  # len(names)
 

@@ -21,6 +21,7 @@ class MLP(nn.Module):
     def forward(self, x):
         return self.model(x)
 
+
 class MLP2(nn.Module):
     def __init__(self, input_dim, output_dim):
         super(MLP2, self).__init__()
@@ -36,6 +37,7 @@ class MLP2(nn.Module):
 
     def forward(self, x):
         return self.model(x)
+
 
 class CNN(nn.Module):
     def __init__(self, input_dim, width, height):

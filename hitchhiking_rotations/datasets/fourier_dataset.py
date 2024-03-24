@@ -7,6 +7,8 @@ import torch
 from torch.utils.data import Dataset
 import matplotlib.pyplot as plt
 import roma
+import pandas as pd
+import seaborn as sns
 
 from hitchhiking_rotations import HITCHHIKING_ROOT_DIR
 from hitchhiking_rotations.utils import save_pickle, load_pickle
@@ -43,24 +45,32 @@ class PoseToFourierDataset(Dataset):
 
 
 class random_fourier_function:
-    def __init__(self, n_basis, seed, A0=0.0, L=1.0):
+    def __init__(self, n_basis, seed, L=np.pi):
         np.random.seed(seed)
-        self.L = L
         self.n_basis = n_basis
-        self.A0 = A0
+        self.L = L
         self.A = np.random.normal(size=n_basis)
         self.B = np.random.normal(size=n_basis)
         self.matrix = np.random.normal(size=(1, 9))
 
     def __call__(self, x):
-        fFs = self.A0 / 2
+        fFs = 0.0
         for k in range(len(self.A)):
-            fFs = (
-                fFs
-                + self.A[k] * np.cos((k + 1) * np.pi * np.matmul(self.matrix, x) / self.L)
-                + self.B[k] * np.sin((k + 1) * np.pi * np.matmul(self.matrix, x) / self.L)
+            input = np.matmul(self.matrix, x)
+            fFs += self.A[k] * np.cos((k + 1) * np.pi * input / self.L) + self.B[k] * np.sin(
+                (k + 1) * np.pi * input / self.L
             )
         return fFs
+
+    def input_to_fourier(self, x):
+        return np.matmul(self.matrix, x)
+
+
+def batch_normalize(arr):
+    mean = np.mean(arr, axis=0, keepdims=True)
+    std = np.std(arr, axis=0, keepdims=True)
+    std[std == 0] = 1
+    return (arr - mean) / std
 
 
 def create_data(N_points, nb, seed):
@@ -79,10 +89,13 @@ def create_data(N_points, nb, seed):
     inputs = rots.as_matrix().reshape(N_points, -1)
     four_func = random_fourier_function(nb, seed)
     features = np.apply_along_axis(four_func, 1, inputs)
+
+    features = batch_normalize(features)
     return rots.as_quat().astype(np.float32), features.astype(np.float32)
 
 
 def plot_fourier_data(rotations, features):
+    """Plot distribution of rotations and features."""
     import pandas as pd
     import seaborn as sns
 
@@ -99,5 +112,30 @@ def plot_fourier_data(rotations, features):
     plt.show()
 
 
+def plot_fourier_func(nb, seed):
+    """Plot the target function."""
+    rots = Rotation.random(400)
+    inputs = rots.as_matrix().reshape(400, -1)
+    four_func = random_fourier_function(nb, seed)
+    four_in = np.apply_along_axis(four_func.input_to_fourier, 1, inputs)
+    features = np.apply_along_axis(four_func, 1, inputs)
+    features2 = batch_normalize(features)
+    sorted_indices = np.argsort(four_in, axis=0)
+
+    plt.figure()
+    plt.plot(four_in[sorted_indices].flatten(), features[sorted_indices].flatten(), linestyle="-", marker=None)
+    plt.plot(
+        four_in[sorted_indices].flatten(), features2[sorted_indices].flatten(), linestyle="-", color="red", marker=None
+    )
+    plt.title(f"nb: {nb}, seed: {seed},\n matrix: {four_func.matrix}")
+    plt.show()
+
+
 if __name__ == "__main__":
-    create_data(N_points=100, nb=2, seed=5)
+    # Analyze created data
+    for b in range(1, 6):
+        for s in range(0, 3):
+            # rots, features = create_data(N_points=100, nb=b, seed=s)
+            # data_stats(rots, features)
+            # plot_fourier_data(rots, features)
+            plot_fourier_func(b, s)
