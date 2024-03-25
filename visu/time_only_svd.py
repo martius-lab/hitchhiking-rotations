@@ -1,6 +1,6 @@
 from hitchhiking_rotations import HITCHHIKING_ROOT_DIR
 from hitchhiking_rotations.utils import save_pickle
-from hitchhiking_rotations.utils import RotRep
+from hitchhiking_rotations.utils import RotRep, gigachad_colors
 from hitchhiking_rotations.cfgs import get_cfg_cube_image_to_pose
 import numpy as np
 import argparse
@@ -10,7 +10,7 @@ from omegaconf import OmegaConf
 import torch
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
-
+import seaborn as sns
 
 parser = argparse.ArgumentParser()
 
@@ -79,7 +79,7 @@ sub_timings = np.array([timing_result[k] for k in method_names])
 means = sub_timings.mean(axis=1)
 # Create stacked bar plot
 
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(8, 4))
 
 bar_width = 0.8
 
@@ -95,27 +95,22 @@ index = np.array(index)
 plots = []
 bottom = np.zeros(len(method_names))
 
-colors = plt.get_cmap("tab20b")([0, 4])
-
-
-# colors = plt.get_cmap('Greens')(np.linspace(0.0, 1.0, sub_timings.shape[2]))
-
 subtiming_labels = [
     "postprocess_pred_loss",
 ]
 
+sns.set_style("whitegrid")
+plt.rcParams.update({"font.size": 18})
+
 for i, label in enumerate(subtiming_labels):
-    plot = ax.bar(index, means[:, i], bar_width, bottom=bottom, color=colors[:2])
+    plot = ax.bar(index, means[:, i], bar_width, bottom=bottom, color=gigachad_colors[:2])
     bottom += means[:, i]
     plots.append(plot)
 
 ax.set_xlabel("Methods")
 ax.set_ylabel("Time in ms")
-ax.set_title("Timing Results")
 ax.set_xticks(index)
 ax.set_xticklabels(method_names)
-ax.legend()
-
 
 experiment_folder = os.path.join(HITCHHIKING_ROOT_DIR, "results", "image_to_pose_timing")
 os.makedirs(experiment_folder, exist_ok=True)

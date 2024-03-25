@@ -1,6 +1,6 @@
 from hitchhiking_rotations import HITCHHIKING_ROOT_DIR
 from hitchhiking_rotations.utils import save_pickle
-from hitchhiking_rotations.utils import RotRep
+from hitchhiking_rotations.utils import RotRep, gigachad_colors
 from hitchhiking_rotations.cfgs import get_cfg_cube_image_to_pose
 import numpy as np
 import argparse
@@ -95,8 +95,6 @@ index = np.array(index)
 plots = []
 bottom = np.zeros(len(method_names))
 
-colors = plt.get_cmap("tab20b")([0, 2, 4, 6, 8, 10, 12])
-
 subtiming_labels = [
     "preprocess_input",
     "model_forward",
@@ -107,7 +105,7 @@ subtiming_labels = [
 ]
 
 for i, label in enumerate(subtiming_labels):
-    plot = ax.bar(index, means[:, i], bar_width, bottom=bottom, label=label, color=colors[i])
+    plot = ax.bar(index, means[:, i], bar_width, bottom=bottom, label=label, color=gigachad_colors[i])
     bottom += means[:, i]
     plots.append(plot)
 
