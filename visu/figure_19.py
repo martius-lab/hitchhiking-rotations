@@ -22,9 +22,7 @@ sns.set_style("whitegrid")
 plt.rcParams.update({"font.size": 11})
 
 for j, selected_metric in enumerate(["geodesic_distance", "chordal_distance"]):
-    files = [
-        str(s) for s in Path(os.path.join(HITCHHIKING_ROOT_DIR, "results", exp)).rglob("*result.npy")
-    ]
+    files = [str(s) for s in Path(os.path.join(HITCHHIKING_ROOT_DIR, "results", exp)).rglob("*result.npy")]
     results = [np.load(file, allow_pickle=True) for file in files]
 
     df_res = {}
