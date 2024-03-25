@@ -3,15 +3,15 @@
 # All rights reserved. Licensed under the MIT license.
 # See LICENSE file in the project root for details.
 #
-def passthrough(*x):
+def passthrough(*x, **kwargs):
     if len(x) == 1:
         return x[0]
     return x
 
 
-def flatten(x):
+def flatten(x, **kwargs):
     return x.reshape(x.shape[0], -1)
 
 
-def n_3x3(x):
+def n_3x3(x, **kwargs):
     return x.reshape(-1, 3, 3)

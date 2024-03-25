@@ -78,7 +78,7 @@ class Trainer:
         with torch.no_grad():
             pp_target = self.preprocess_target(target)
 
-        x = self.preprocess_input(x)
+        x = self.preprocess_input(x, mode="train")
         pred = self.model(x)
         pred_loss = self.postprocess_pred_loss(pred)
 
@@ -96,7 +96,7 @@ class Trainer:
     @torch.no_grad()
     def test_batch(self, x, target, epoch, mode):
         self.model.eval()
-        x = self.preprocess_input(x)
+        x = self.preprocess_input(x, mode="test")
         pred = self.model(x)
         pred_loss = self.postprocess_pred_loss(pred)
         pp_target = self.preprocess_target(target)
