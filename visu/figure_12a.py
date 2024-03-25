@@ -1,4 +1,5 @@
 import os
+import sys
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -10,9 +11,14 @@ from hitchhiking_rotations.utils import RotRep
 
 selected_metric = "geodesic_distance"
 training_metric = "chordal_distance"
+exps = ["pcd_to_pose", "cube_image_to_pose"]
 
+assert len(sys.argv) == 2, "Please provide the experiment name as an argument."
+assert sys.argv[1] in exps, f"Experiment name should be one of {exps}"
 
-files = [str(s) for s in Path(os.path.join(HITCHHIKING_ROOT_DIR, "results", "cube_image_to_pose")).rglob("*result.npy")]
+exp = sys.argv[1]
+
+files = [str(s) for s in Path(os.path.join(HITCHHIKING_ROOT_DIR, "results", exp)).rglob("*result.npy")]
 results = [np.load(file, allow_pickle=True) for file in files]
 
 df_res = {}
@@ -71,6 +77,6 @@ plt.xlabel("Error - Geodesic Distance")
 plt.ylabel("")
 plt.tight_layout()
 
-out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", "cube_image_to_pose", "figure_12a.pdf")
+out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", exp, "figure_12a.pdf")
 plt.savefig(out_p)
 plt.show()

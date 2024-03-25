@@ -17,7 +17,7 @@ def get_cfg_pcd_to_pose(device):
     return {
         "verbose": False,
         "batch_size": 32,
-        "epochs": 100,
+        "epochs": 300,
         "training_data": {
             "_target_": "hitchhiking_rotations.datasets.PointCloudDataset",
             "mode": "train",
@@ -47,7 +47,7 @@ def get_cfg_pcd_to_pose(device):
             "metrics": ["l1", "l2", "geodesic_distance", "chordal_distance"],
         },
         "trainers": {
-            "r9_l1": {
+            "r9_svd_l1": {
                 **shared_trainer_cfg,
                 **{
                     "preprocess_target": "${u:passthrough}",
@@ -57,11 +57,51 @@ def get_cfg_pcd_to_pose(device):
                     "model": "${model9}",
                 },
             },
-            "r9_l2": {
+            "r9_svd_l2": {
                 **shared_trainer_cfg,
                 **{
                     "preprocess_target": "${u:passthrough}",
                     "postprocess_pred_loss": "${u:procrustes_to_rotmat}",
+                    "postprocess_pred_logging": "${u:procrustes_to_rotmat}",
+                    "loss": "${u:l2}",
+                    "model": "${model9}",
+                },
+            },
+            "r9_svd_geodesic_distance": {
+                **shared_trainer_cfg,
+                **{
+                    "preprocess_target": "${u:passthrough}",
+                    "postprocess_pred_loss": "${u:procrustes_to_rotmat}",
+                    "postprocess_pred_logging": "${u:procrustes_to_rotmat}",
+                    "loss": "${u:geodesic_distance}",
+                    "model": "${model9}",
+                },
+            },
+            "r9_svd_chordal_distance": {
+                **shared_trainer_cfg,
+                **{
+                    "preprocess_target": "${u:passthrough}",
+                    "postprocess_pred_loss": "${u:procrustes_to_rotmat}",
+                    "postprocess_pred_logging": "${u:procrustes_to_rotmat}",
+                    "loss": "${u:chordal_distance}",
+                    "model": "${model9}",
+                },
+            },
+            "r9_l1": {
+                **shared_trainer_cfg,
+                **{
+                    "preprocess_target": "${u:flatten}",
+                    "postprocess_pred_loss": "${u:flatten}",
+                    "postprocess_pred_logging": "${u:procrustes_to_rotmat}",
+                    "loss": "${u:l1}",
+                    "model": "${model9}",
+                },
+            },
+            "r9_l2": {
+                **shared_trainer_cfg,
+                **{
+                    "preprocess_target": "${u:flatten}",
+                    "postprocess_pred_loss": "${u:flatten}",
                     "postprocess_pred_logging": "${u:procrustes_to_rotmat}",
                     "loss": "${u:l2}",
                     "model": "${model9}",
@@ -71,7 +111,7 @@ def get_cfg_pcd_to_pose(device):
                 **shared_trainer_cfg,
                 **{
                     "preprocess_target": "${u:passthrough}",
-                    "postprocess_pred_loss": "${u:procrustes_to_rotmat}",
+                    "postprocess_pred_loss": "${u:n_3x3}",
                     "postprocess_pred_logging": "${u:procrustes_to_rotmat}",
                     "loss": "${u:geodesic_distance}",
                     "model": "${model9}",
@@ -81,13 +121,33 @@ def get_cfg_pcd_to_pose(device):
                 **shared_trainer_cfg,
                 **{
                     "preprocess_target": "${u:passthrough}",
-                    "postprocess_pred_loss": "${u:procrustes_to_rotmat}",
+                    "postprocess_pred_loss": "${u:n_3x3}",
                     "postprocess_pred_logging": "${u:procrustes_to_rotmat}",
                     "loss": "${u:chordal_distance}",
                     "model": "${model9}",
                 },
             },
             "r6_l1": {
+                **shared_trainer_cfg,
+                **{
+                    "preprocess_target": "${u:rotmat_to_gramschmidt_f}",
+                    "postprocess_pred_loss": "${u:flatten}",
+                    "postprocess_pred_logging": "${u:gramschmidt_to_rotmat}",
+                    "loss": "${u:l1}",
+                    "model": "${model6}",
+                },
+            },
+            "r6_l2": {
+                **shared_trainer_cfg,
+                **{
+                    "preprocess_target": "${u:rotmat_to_gramschmidt_f}",
+                    "postprocess_pred_loss": "${u:flatten}",
+                    "postprocess_pred_logging": "${u:gramschmidt_to_rotmat}",
+                    "loss": "${u:l2}",
+                    "model": "${model6}",
+                },
+            },
+            "r6_gso_l1": {
                 **shared_trainer_cfg,
                 **{
                     "preprocess_target": "${u:passthrough}",
@@ -97,7 +157,7 @@ def get_cfg_pcd_to_pose(device):
                     "model": "${model6}",
                 },
             },
-            "r6_l2": {
+            "r6_gso_l2": {
                 **shared_trainer_cfg,
                 **{
                     "preprocess_target": "${u:passthrough}",
@@ -107,7 +167,7 @@ def get_cfg_pcd_to_pose(device):
                     "model": "${model6}",
                 },
             },
-            "r6_geodesic_distance": {
+            "r6_gso_geodesic_distance": {
                 **shared_trainer_cfg,
                 **{
                     "preprocess_target": "${u:passthrough}",
@@ -117,7 +177,7 @@ def get_cfg_pcd_to_pose(device):
                     "model": "${model6}",
                 },
             },
-            "r6_chordal_distance": {
+            "r6_gso_chordal_distance": {
                 **shared_trainer_cfg,
                 **{
                     "preprocess_target": "${u:passthrough}",
@@ -125,6 +185,16 @@ def get_cfg_pcd_to_pose(device):
                     "postprocess_pred_logging": "${u:gramschmidt_to_rotmat}",
                     "loss": "${u:chordal_distance}",
                     "model": "${model6}",
+                },
+            },
+            "quat_c_geodesic_distance": {
+                **shared_trainer_cfg,
+                **{
+                    "preprocess_target": "${u:passthrough}",
+                    "postprocess_pred_loss": "${u:quaternion_to_rotmat}",
+                    "postprocess_pred_logging": "${u:quaternion_to_rotmat}",
+                    "loss": "${u:geodesic_distance}",
+                    "model": "${model4}",
                 },
             },
             "quat_c_chordal_distance": {
@@ -171,6 +241,46 @@ def get_cfg_pcd_to_pose(device):
                 **shared_trainer_cfg,
                 **{
                     "preprocess_target": "${u:rotmat_to_quaternion_canonical}",
+                    "postprocess_pred_loss": "${u:passthrough}",
+                    "postprocess_pred_logging": "${u:quaternion_to_rotmat}",
+                    "loss": "${u:l2_dp}",
+                    "model": "${model4}",
+                },
+            },
+            "quat_rf_cosine_distance": {
+                **shared_trainer_cfg,
+                **{
+                    "preprocess_target": "${u:rotmat_to_quaternion_rand_flip}",
+                    "postprocess_pred_loss": "${u:passthrough}",
+                    "postprocess_pred_logging": "${u:quaternion_to_rotmat}",
+                    "loss": "${u:cosine_distance}",
+                    "model": "${model4}",
+                },
+            },
+            "quat_rf_l2": {
+                **shared_trainer_cfg,
+                **{
+                    "preprocess_target": "${u:rotmat_to_quaternion_rand_flip}",
+                    "postprocess_pred_loss": "${u:passthrough}",
+                    "postprocess_pred_logging": "${u:quaternion_to_rotmat}",
+                    "loss": "${u:l2}",
+                    "model": "${model4}",
+                },
+            },
+            "quat_rf_l1": {
+                **shared_trainer_cfg,
+                **{
+                    "preprocess_target": "${u:rotmat_to_quaternion_rand_flip}",
+                    "postprocess_pred_loss": "${u:passthrough}",
+                    "postprocess_pred_logging": "${u:quaternion_to_rotmat}",
+                    "loss": "${u:l1}",
+                    "model": "${model4}",
+                },
+            },
+            "quat_rf_l2_dp": {
+                **shared_trainer_cfg,
+                **{
+                    "preprocess_target": "${u:rotmat_to_quaternion_rand_flip}",
                     "postprocess_pred_loss": "${u:passthrough}",
                     "postprocess_pred_logging": "${u:quaternion_to_rotmat}",
                     "loss": "${u:l2_dp}",
