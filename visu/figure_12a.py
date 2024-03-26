@@ -43,11 +43,11 @@ for run in results:
 df = pd.DataFrame.from_dict(df_res)
 
 mapping = {
-    "r9_svd": RotRep.SVD,
-    "r6_gso": RotRep.GSO,
-    "quat_c": RotRep.QUAT_C,
-    "rotvec": RotRep.EXP,
-    "euler": RotRep.EULER,
+    "r9_svd": str(RotRep.SVD) + "-Chordal",
+    "r6_gso": str(RotRep.GSO) + "-Chordal",
+    "quat_c": str(RotRep.QUAT_C) + "-Chordal",
+    "rotvec": str(RotRep.EXP) + "-Chordal",
+    "euler":  str(RotRep.EULER) + "-Chordal",
 }
 
 for k, v in mapping.items():
@@ -73,7 +73,7 @@ sns.boxplot(
     fliersize=2.5,
     showfliers=True,
 )
-plt.xlabel("Error - Geodesic Distance")
+plt.xlabel("Error - Geodesic")
 plt.ylabel("")
 plt.tight_layout()
 
