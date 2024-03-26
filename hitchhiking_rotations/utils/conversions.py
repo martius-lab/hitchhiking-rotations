@@ -6,6 +6,7 @@
 from hitchhiking_rotations.utils.euler_helper import euler_angles_to_matrix, matrix_to_euler_angles
 import roma
 import torch
+from math import pi
 
 
 def euler_to_rotmat(inp: torch.Tensor, **kwargs) -> torch.Tensor:
@@ -75,17 +76,13 @@ def rotmat_to_quaternion_canonical(base: torch.Tensor, **kwargs) -> torch.Tensor
 
 def rotmat_to_quaternion_aug(base: torch.Tensor, mode: str) -> torch.Tensor:
     """Performs memory-efficient quaternion augmentation by randomly
-    selecting some quaternions in the batch for which the scalar part
-    is smaller than 0.1 then multiply the selected quaternions by -1.
+    selecting half of the quaternions in the batch with scalar part
+    smaller than 0.1 and then multiplies them with -1.
     """
     rep = rotmat_to_quaternion_canonical(base)
 
     if mode == "train":
-        idxs = torch.arange(rep.size(0), device=rep.device)[rep[:, 3] < 0.1]
-        num_rows_to_flip = torch.randint(0, idxs.size(0) + 1, (1,)).item()
-        random_indices = torch.randperm(idxs.size(0), device=rep.device)[:num_rows_to_flip]
-        selected_idxs = idxs[random_indices]
-        rep[selected_idxs] *= -1
+        rep[torch.logical_and(torch.rand(rep.size(0)) < 0.5, rep[:, 3] < 0.1)] *= -1
 
     return rep
 
@@ -104,6 +101,13 @@ def rotmat_to_procrustes(base: torch.Tensor, **kwargs) -> torch.Tensor:
 
 def rotmat_to_rotvec(base: torch.Tensor, **kwargs) -> torch.Tensor:
     return roma.rotmat_to_rotvec(base)
+
+
+def rotmat_to_rotvec_canonical(base: torch.Tensor, **kwargs) -> torch.Tensor:
+    """WARNING: THIS FUNCTION HAS NOT BEEN TESTED"""
+    rep = roma.rotmat_to_rotvec(base)
+    rep[rep[:, 2] < 0] = (1.0 - 2.0 * pi / rep[rep[:, 2] < 0].norm(dim=1, keepdim=True)) * rep[rep[:, 2] < 0]
+    return rep
 
 
 def test_all():
