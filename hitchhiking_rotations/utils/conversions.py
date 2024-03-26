@@ -77,12 +77,12 @@ def rotmat_to_quaternion_canonical(base: torch.Tensor, **kwargs) -> torch.Tensor
 def rotmat_to_quaternion_aug(base: torch.Tensor, mode: str) -> torch.Tensor:
     """Performs memory-efficient quaternion augmentation by randomly
     selecting half of the quaternions in the batch with scalar part
-    smaller than 0.1 and then multiplies them with -1.
+    smaller than 0.1 and then multiplies them by -1.
     """
     rep = rotmat_to_quaternion_canonical(base)
 
     if mode == "train":
-        rep[torch.logical_and(torch.rand(rep.size(0)) < 0.5, rep[:, 3] < 0.1)] *= -1
+        rep[torch.logical_and(torch.rand(rep.size(0), device=rep.device) < 0.5, rep[:, 3] < 0.3)] *= -1
 
     return rep
 
