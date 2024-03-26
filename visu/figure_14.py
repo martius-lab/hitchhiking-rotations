@@ -59,9 +59,9 @@ if rename_and_filter:
     mapping = {
         "euler": RotRep.EULER,
         "rotvec": RotRep.EXP,
-        "quat_rf": str(RotRep.QUAT) + "_rf",
+        "quat_rf": RotRep.QUAT_RF,
         "quat_c": RotRep.QUAT_C,
-        "quat_aug": str(RotRep.QUAT_C) + "_aug",
+        "quat_aug": RotRep.QUAT_AUG,
         "r6": RotRep.GSO,
         "r9": RotRep.SVD,
     }
@@ -87,7 +87,7 @@ g = sns.catplot(
     aspect=2.0,
 )
 
-# g.map(sns.stripplot, "basis", "score", "method", dodge=True, alpha=0.6)
+g.map(sns.stripplot, "basis", "score", "method", dodge=True, alpha=0.6)
 
 sns.move_legend(g, "upper left", bbox_to_anchor=(0.11, 0.98), ncol=3, title="Network input")  # len(names)
 

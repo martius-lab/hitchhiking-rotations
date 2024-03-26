@@ -48,7 +48,8 @@ if rename_and_filter:
         "r9": RotRep.ROTMAT,
         "r6": RotRep.RSIX,
         "quat_c": RotRep.QUAT_C,
-        "quat_rf": str(RotRep.QUAT) + "_rf",
+        "quat_rf": RotRep.QUAT_RF,
+        "quat_aug": RotRep.QUAT_AUG,
         "rotvec": RotRep.EXP,
         "euler": RotRep.EULER,
     }
