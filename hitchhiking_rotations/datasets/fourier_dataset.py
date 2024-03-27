@@ -49,22 +49,21 @@ class PoseToFourierDataset(Dataset):
 
 def random_fourier_function(x, nb, seed):
     key = jax.random.PRNGKey(seed)
-    key1, key2, key3 = jax.random.split(key, 3)
-    model = eqx.nn.MLP(in_size=9, out_size=1, width_size=50, depth=1, key=key1)
-    A = jax.random.normal(key=key2, shape=(nb,))
-    B = jax.random.normal(key=key3, shape=(nb,))
+    key1, key2 = jax.random.split(key, 2)
+    A = jax.random.normal(key=key1, shape=(nb,))
+    B = jax.random.normal(key=key2, shape=(nb,))
 
-    input = model(x)
+    model = eqx.nn.MLP(in_size=9, out_size=1, width_size=50, depth=1, key=jax.random.PRNGKey(42 + seed))
+
     fFs = 0.0
+    input = model(x)
     for k in range(len(A)):
         fFs += A[k] * jnp.cos((k + 1) * jnp.pi * input) + B[k] * jnp.sin((k + 1) * jnp.pi * input)
     return fFs
 
 
 def input_to_fourier(x, seed):
-    key = jax.random.PRNGKey(seed)
-    key1, key2, key3 = jax.random.split(key, 3)
-    model = eqx.nn.MLP(in_size=9, out_size=1, width_size=50, depth=1, key=key1)
+    model = eqx.nn.MLP(in_size=9, out_size=1, width_size=50, depth=1, key=jax.random.PRNGKey(42 + seed))
     return model(x)
 
 
@@ -132,8 +131,8 @@ def plot_fourier_func(nb, seed):
 
 if __name__ == "__main__":
     # Analyze created data
-    for b in range(1, 7):
-        for s in range(0, 6):
+    for b in range(1, 6):
+        for s in range(0, 1):
             # rots, features = create_data(N_points=100, nb=b, seed=s)
             # data_stats(rots, features)
             # plot_fourier_data(rots, features)
