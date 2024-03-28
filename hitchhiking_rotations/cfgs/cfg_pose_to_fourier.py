@@ -21,7 +21,7 @@ def get_cfg_pose_to_fourier(device, nb, nf):
     return {
         "verbose": False,
         "batch_size": 64,
-        "epochs": 300,
+        "epochs": 400,
         "training_data": {
             "_target_": "hitchhiking_rotations.datasets.PoseToFourierDataset",
             "mode": "train",
@@ -41,7 +41,7 @@ def get_cfg_pose_to_fourier(device, nb, nf):
         "val_data": {
             "_target_": "hitchhiking_rotations.datasets.PoseToFourierDataset",
             "mode": "val",
-            "dataset_size": 400,
+            "dataset_size": 200,
             "device": device,
             "nb": nb,
             "nf": nf,

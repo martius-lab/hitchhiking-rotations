@@ -62,8 +62,8 @@ if rename_and_filter:
         "quat_rf": RotRep.QUAT_RF,
         "quat_c": RotRep.QUAT_C,
         "quat_aug": RotRep.QUAT_AUG,
-        "r6": RotRep.GSO,
-        "r9": RotRep.SVD,
+        "r6": RotRep.RSIX,
+        "r9": RotRep.ROTMAT,
     }
 
     training_metric = "l2"
