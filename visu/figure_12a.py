@@ -40,19 +40,18 @@ mapping = {
     "r9_svd": RotRep.SVD,
     "r6_gso": RotRep.GSO,
     "quat_c": RotRep.QUAT_C,
+    # "quat_rf": RotRep.QUAT_RF,
     "rotvec": RotRep.EXP,
     "euler": RotRep.EULER,
 }
 
-for k, v in mapping.items():
-    df["method"][df["method"] == k + "_" + training_metric] = v
-
+df["method"] = df["method"].replace({k + "_" + training_metric: v for k, v in mapping.items()})
 df["method"] = pd.Categorical(df["method"], categories=[v for v in mapping.values()], ordered=True)
 
 plt.style.use(os.path.join(HITCHHIKING_ROOT_DIR, "assets", "prettyplots.mplstyle"))
 sns.set_style("whitegrid")
 plt.rcParams.update({"font.size": 11})
-plt.figure(figsize=(7, 2.5))
+plt.figure(figsize=(5, 2.5))
 plt.subplot(1, 1, 1)
 
 
@@ -67,10 +66,17 @@ sns.boxplot(
     fliersize=2.5,
     showfliers=True,
 )
-plt.xlabel("Error - Geodesic Distance")
-plt.ylabel("")
-plt.tight_layout()
 
+if selected_metric == "geodesic_distance":
+    plt.xlabel("Geodesic distance")
+plt.ylabel("")
+# plt.xscale("log")
+
+print("WARNING: Tick labels are hardcoded!")
+plt.xticks([0.3, 0.4, 0.5, 0.6], ["0.3", "0.4", "0.5", "0.6"])
+
+
+plt.tight_layout()
 out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", "cube_image_to_pose", "figure_12a.pdf")
 plt.savefig(out_p)
 plt.show()

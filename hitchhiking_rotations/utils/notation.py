@@ -12,7 +12,7 @@ class RotRep(Enum):
     QUAT_C = r"Quat$^+$"
     QUAT = r"Quat"
     QUAT_RF = r"Quat$^{\mathrm{RF}}$"
-    QUAT_AUG = r"Quat$^{\mathrm{a}+}$"
+    QUAT_AUG = r"Quat$^{\mathrm{a}{+}}$"
     EULER = r"Euler"
     EXP = r"Exp"
     ROTMAT = r"$\mathbb{R}^9$"
