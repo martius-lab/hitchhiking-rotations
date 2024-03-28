@@ -1,4 +1,5 @@
 import os
+import sys
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -7,15 +8,21 @@ from pathlib import Path
 import pandas as pd
 from hitchhiking_rotations.utils import RotRep
 
+
+exps = ["pcd_to_pose", "cube_image_to_pose"]
+
+assert len(sys.argv) == 2, "Please provide the experiment name as an argument."
+assert sys.argv[1] in exps, f"Experiment name should be one of {exps}"
+
+exp = sys.argv[1]
+
 plt.figure(figsize=(14, 14))
 plt.style.use(os.path.join(HITCHHIKING_ROOT_DIR, "assets", "prettyplots.mplstyle"))
 sns.set_style("whitegrid")
 plt.rcParams.update({"font.size": 11})
 
 for j, selected_metric in enumerate(["geodesic_distance", "chordal_distance"]):
-    files = [
-        str(s) for s in Path(os.path.join(HITCHHIKING_ROOT_DIR, "results", "cube_image_to_pose")).rglob("*result.npy")
-    ]
+    files = [str(s) for s in Path(os.path.join(HITCHHIKING_ROOT_DIR, "results", exp)).rglob("*result.npy")]
     results = [np.load(file, allow_pickle=True) for file in files]
 
     df_res = {}
@@ -113,7 +120,7 @@ for j, selected_metric in enumerate(["geodesic_distance", "chordal_distance"]):
     # plt.xscale("log")
     plt.tight_layout()
 
-out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", "cube_image_to_pose", f"figure_19_combined.pdf")
+out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", exp, f"figure_19_combined.pdf")
 
 plt.savefig(out_p)
 

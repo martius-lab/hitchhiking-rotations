@@ -112,3 +112,46 @@ class Trainer:
 
     def training_finish(self):
         self.model.load_state_dict(self.early_stopper.best_state_dict)
+
+    @torch.no_grad()
+    def test_batch_time(self, x, target, epoch, mode):
+        self.model.eval()
+
+        t0 = torch.cuda.Event(enable_timing=True)
+        t1 = torch.cuda.Event(enable_timing=True)
+        t2 = torch.cuda.Event(enable_timing=True)
+        t3 = torch.cuda.Event(enable_timing=True)
+        t4 = torch.cuda.Event(enable_timing=True)
+        t5 = torch.cuda.Event(enable_timing=True)
+        t6 = torch.cuda.Event(enable_timing=True)
+
+        torch.cuda.synchronize()
+        t0.record()
+        x = self.preprocess_input(x)  # Step 0
+        torch.cuda.synchronize()
+        t1.record()
+        pred = self.model(x)  # Step 1
+        torch.cuda.synchronize()
+        t2.record()
+        pred_loss = self.postprocess_pred_loss(pred)  # Step 2
+        torch.cuda.synchronize()
+        t3.record()
+        pp_target = self.preprocess_target(target)  # Step 3
+        torch.cuda.synchronize()
+        t4.record()
+        loss = self.loss(pred_loss, pp_target)  # Step 4
+        torch.cuda.synchronize()
+        t5.record()
+        _ = self.postprocess_pred_logging(pred)  # Step 5
+        torch.cuda.synchronize()
+        t6.record()
+        torch.cuda.synchronize()
+
+        return [
+            t0.elapsed_time(t1),
+            t1.elapsed_time(t2),
+            t2.elapsed_time(t3),
+            t3.elapsed_time(t4),
+            t4.elapsed_time(t5),
+            t5.elapsed_time(t6),
+        ], loss

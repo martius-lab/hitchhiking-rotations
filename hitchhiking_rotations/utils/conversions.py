@@ -112,6 +112,7 @@ def rotmat_to_rotvec_canonical(base: torch.Tensor, **kwargs) -> torch.Tensor:
 
 def test_all():
     from scipy.spatial.transform import Rotation
+    from torch import from_numpy as tr
     import numpy as np
     from torch import from_numpy as tr
 
