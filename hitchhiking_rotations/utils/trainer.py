@@ -39,6 +39,7 @@ class Trainer:
         loss,
         model,
         lr,
+        patience,
         optimizer,
         logger,
         verbose,
@@ -68,7 +69,7 @@ class Trainer:
         self.nr_training_steps = 0
         self.nr_test_steps = 0
 
-        self.early_stopper = EarlyStopper(model=self.model, patience=10, min_delta=0)
+        self.early_stopper = EarlyStopper(model=self.model, patience=patience, min_delta=0)
 
     def train_batch(self, x, target, epoch):
         self.model.train()
@@ -77,7 +78,7 @@ class Trainer:
         with torch.no_grad():
             pp_target = self.preprocess_target(target)
 
-        x = self.preprocess_input(x)
+        x = self.preprocess_input(x, mode="train")
         pred = self.model(x)
         pred_loss = self.postprocess_pred_loss(pred)
 
@@ -95,7 +96,7 @@ class Trainer:
     @torch.no_grad()
     def test_batch(self, x, target, epoch, mode):
         self.model.eval()
-        x = self.preprocess_input(x)
+        x = self.preprocess_input(x, mode="test")
         pred = self.model(x)
         pred_loss = self.postprocess_pred_loss(pred)
         pp_target = self.preprocess_target(target)

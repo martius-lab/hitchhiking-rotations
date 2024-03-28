@@ -7,7 +7,6 @@ from pathlib import Path
 import pandas as pd
 from hitchhiking_rotations.utils import RotRep
 
-
 files = [str(s) for s in Path(os.path.join(HITCHHIKING_ROOT_DIR, "results", "pose_to_cube_image")).rglob("*result.npy")]
 results = [np.load(file, allow_pickle=True) for file in files]
 
@@ -47,30 +46,33 @@ if rename_and_filter:
     mapping = {
         "r9": RotRep.ROTMAT,
         "r6": RotRep.RSIX,
+        "quat_aug": RotRep.QUAT_AUG,
         "quat_c": RotRep.QUAT_C,
-        "quat_rf": str(RotRep.QUAT) + "_rf",
+        "quat_rf": RotRep.QUAT_RF,
         "rotvec": RotRep.EXP,
         "euler": RotRep.EULER,
     }
 
     training_metric = "l2"
-    for k, v in mapping.items():
-        df["method"][df["method"] == k + "_" + training_metric] = v
-
+    df["method"] = df["method"].replace({k + "_" + training_metric: v for k, v in mapping.items()})
     df["method"] = pd.Categorical(df["method"], categories=[v for v in mapping.values()], ordered=True)
 
 plt.style.use(os.path.join(HITCHHIKING_ROOT_DIR, "assets", "prettyplots.mplstyle"))
 sns.set_style("whitegrid")
 plt.rcParams.update({"font.size": 11})
-plt.figure(figsize=(7, 2.5))
+plt.figure(figsize=(5, 2.5))
 plt.subplot(1, 1, 1)
 
-
 sns.boxplot(data=df, x="score", y="method", palette="Greens", orient="h", width=0.5, linewidth=1.5, fliersize=2.5)
-plt.xlabel("Error - MSE")
-plt.ylabel("")
-plt.tight_layout()
 
+plt.xlabel("MSE")
+plt.ylabel("")
+plt.xscale("log")
+
+print("WARNING: Tick labels are hardcoded!")
+plt.xticks([0.0005, 0.001, 0.002, 0.004], [r"$5\cdot10^{-4}$", r"$10^{-3}$", r"$2\cdot10^{-3}$", r"$4\cdot10^{-3}$"])
+
+plt.tight_layout()
 out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", "pose_to_cube_image", "figure_12b.pdf")
 plt.savefig(out_p)
 plt.show()

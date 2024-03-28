@@ -57,12 +57,13 @@ df = pd.DataFrame.from_dict(df_res)
 
 if rename_and_filter:
     mapping = {
-        "r9": RotRep.SVD,
-        "r6": RotRep.GSO,
-        "quat_c": RotRep.QUAT_C,
-        "quat_rf": str(RotRep.QUAT) + "_rf",
-        "rotvec": RotRep.EXP,
         "euler": RotRep.EULER,
+        "rotvec": RotRep.EXP,
+        "quat_rf": RotRep.QUAT_RF,
+        "quat_c": RotRep.QUAT_C,
+        "quat_aug": RotRep.QUAT_AUG,
+        "r6": RotRep.RSIX,
+        "r9": RotRep.ROTMAT,
     }
 
     training_metric = "l2"
@@ -73,7 +74,7 @@ plt.style.use(os.path.join(HITCHHIKING_ROOT_DIR, "assets", "prettyplots.mplstyle
 sns.set_style("whitegrid")
 plt.rcParams.update({"font.size": 11})
 
-plt.figure(figsize=(5.5, 1.0))
+plt.figure(figsize=(5.5, 1))
 g = sns.catplot(
     data=df,
     x="basis",
@@ -86,13 +87,18 @@ g = sns.catplot(
     aspect=2.0,
 )
 
-sns.move_legend(g, "upper left", bbox_to_anchor=(0.11, 0.98), ncol=3, title="Network input")  # len(names)
+# g.map(sns.stripplot, "basis", "score", "method", dodge=True, alpha=0.6)
+
+# sns.move_legend(g, "upper left", bbox_to_anchor=(0.11, 0.98), ncol=2) #, title="Network input")
+sns.move_legend(
+    g, "upper left", bbox_to_anchor=(0.0555, 0.99), ncol=7, handletextpad=0.2, columnspacing=0.55, title=None
+)
 
 for i in range(nb_max - 1):
     plt.axvline(0.5 + i, color="lightgrey", dashes=(2, 2))
 
-plt.xlabel(f"Error - {selected_metric}")
-plt.ylabel("")
+g.set(xlabel=r"Number of fourier basis functions $n_b$", ylabel="MSE")
+
 plt.yscale("log")
 plt.tight_layout()
 

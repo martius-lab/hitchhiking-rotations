@@ -3,4 +3,4 @@
 # All rights reserved. Licensed under the MIT license.
 # See LICENSE file in the project root for details.
 #
-from .models import MLP, CNN, MLPNetPCD
+from .models import MLP, MLP2, CNN, MLPNetPCD

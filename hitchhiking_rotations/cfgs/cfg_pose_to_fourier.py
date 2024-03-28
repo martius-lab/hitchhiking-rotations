@@ -6,7 +6,8 @@
 def get_cfg_pose_to_fourier(device, nb, nf):
     cfg = {
         "_target_": "hitchhiking_rotations.utils.Trainer",
-        "lr": 0.01,
+        "lr": 0.001,
+        "patience": 10,
         "optimizer": "Adam",
         "logger": "${logger}",
         "verbose": "${verbose}",
@@ -40,7 +41,7 @@ def get_cfg_pose_to_fourier(device, nb, nf):
         "val_data": {
             "_target_": "hitchhiking_rotations.datasets.PoseToFourierDataset",
             "mode": "val",
-            "dataset_size": 400,
+            "dataset_size": 200,
             "device": device,
             "nb": nb,
             "nf": nf,
@@ -56,6 +57,7 @@ def get_cfg_pose_to_fourier(device, nb, nf):
         "trainers": {
             "r9_l2": {**cfg, **{"preprocess_input": "${u:flatten}", "model": "${model9}"}},
             "r6_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_gramschmidt_f}", "model": "${model6}"}},
+            "quat_aug_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_quaternion_aug}", "model": "${model4}"}},
             "quat_c_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_quaternion_canonical}", "model": "${model4}"}},
             "quat_rf_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_quaternion_rand_flip}", "model": "${model4}"}},
             "euler_l2": {**cfg, **{"preprocess_input": "${u:rotmat_to_euler}", "model": "${model3}"}},

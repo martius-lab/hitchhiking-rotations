@@ -7,15 +7,16 @@ from enum import Enum
 
 
 class RotRep(Enum):
-    GSO = "$\mathbb{R}^6$+GSO"
-    SVD = "$\mathbb{R}^9$+SVD"
-    QUAT_C = "Quat$^+$"
-    QUAT = "Quat"
-    QUAT_RF = "Quat+RF"
-    EULER = "Euler"
-    EXP = "Exp"
-    ROTMAT = "$\mathbb{R}^9$"
-    RSIX = "$\mathbb{R}^6$"
+    GSO = r"$\mathbb{R}^6$+GSO"
+    SVD = r"$\mathbb{R}^9$+SVD"
+    QUAT_C = r"Quat$^+$"
+    QUAT = r"Quat"
+    QUAT_RF = r"Quat$^{\mathrm{RF}}$"
+    QUAT_AUG = r"Quat$^{\mathrm{a}{+}}$"
+    EULER = r"Euler"
+    EXP = r"Exp"
+    ROTMAT = r"$\mathbb{R}^9$"
+    RSIX = r"$\mathbb{R}^6$"
 
     def __str__(self):
         return "%s" % self.value

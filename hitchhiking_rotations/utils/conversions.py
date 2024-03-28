@@ -3,27 +3,28 @@
 # All rights reserved. Licensed under the MIT license.
 # See LICENSE file in the project root for details.
 #
-from .euler_helper import euler_angles_to_matrix, matrix_to_euler_angles
+from hitchhiking_rotations.utils.euler_helper import euler_angles_to_matrix, matrix_to_euler_angles
 import roma
 import torch
+from math import pi
 
 
-def euler_to_rotmat(inp: torch.Tensor) -> torch.Tensor:
+def euler_to_rotmat(inp: torch.Tensor, **kwargs) -> torch.Tensor:
     return euler_angles_to_matrix(inp.reshape(-1, 3), convention="XZY")
 
 
-def quaternion_to_rotmat(inp: torch.Tensor) -> torch.Tensor:
+def quaternion_to_rotmat(inp: torch.Tensor, **kwargs) -> torch.Tensor:
     # without normalization
     # normalize first
     x = inp.reshape(-1, 4)
     return roma.unitquat_to_rotmat(x / x.norm(dim=1, keepdim=True))
 
 
-def gramschmidt_to_rotmat(inp: torch.Tensor) -> torch.Tensor:
+def gramschmidt_to_rotmat(inp: torch.Tensor, **kwargs) -> torch.Tensor:
     return roma.special_gramschmidt(inp.reshape(-1, 3, 2))
 
 
-def symmetric_orthogonalization(x):
+def symmetric_orthogonalization(x, **kwargs):
     """Maps 9D input vectors onto SO(3) via symmetric orthogonalization.
 
     x: should have size [batch_size, 9]
@@ -40,65 +41,80 @@ def symmetric_orthogonalization(x):
     return r
 
 
-def procrustes_to_rotmat(inp: torch.Tensor) -> torch.Tensor:
+def procrustes_to_rotmat(inp: torch.Tensor, **kwargs) -> torch.Tensor:
     return symmetric_orthogonalization(inp)
     return roma.special_procrustes(inp.reshape(-1, 3, 3))
 
 
-def rotvec_to_rotmat(inp: torch.Tensor) -> torch.Tensor:
+def rotvec_to_rotmat(inp: torch.Tensor, **kwargs) -> torch.Tensor:
     return roma.rotvec_to_rotmat(inp.reshape(-1, 3))
 
 
 # rotmat to x / maybe here reshape is missing
 
 
-def rotmat_to_euler(base: torch.Tensor) -> torch.Tensor:
+def rotmat_to_euler(base: torch.Tensor, **kwargs) -> torch.Tensor:
     return matrix_to_euler_angles(base, convention="XZY")
 
 
-def rotmat_to_quaternion(base: torch.Tensor) -> torch.Tensor:
+def rotmat_to_quaternion(base: torch.Tensor, **kwargs) -> torch.Tensor:
     return roma.rotmat_to_unitquat(base)
 
 
-def rotmat_to_quaternion_rand_flip(base: torch.Tensor) -> torch.Tensor:
-    # we could duplicate the data and flip the quaternions on both sides
-    # def quat_aug_dataset(quats: np.ndarray, ixs):
-    #     # quats: (N, M, .., 4)
-    #     # return augmented inputs and quats
-    #     return (np.concatenate((quats, -quats), axis=0), *np.concatenate((ixs, ixs), axis=0))
-
+def rotmat_to_quaternion_rand_flip(base: torch.Tensor, **kwargs) -> torch.Tensor:
     rep = roma.rotmat_to_unitquat(base)
     rand_flipping = torch.rand(base.shape[0]) > 0.5
     rep[rand_flipping] *= -1
     return rep
 
 
-def rotmat_to_quaternion_canonical(base: torch.Tensor) -> torch.Tensor:
+def rotmat_to_quaternion_canonical(base: torch.Tensor, **kwargs) -> torch.Tensor:
     rep = roma.rotmat_to_unitquat(base)
     rep[rep[:, 3] < 0] *= -1
     return rep
 
 
-def rotmat_to_gramschmidt(base: torch.Tensor) -> torch.Tensor:
+def rotmat_to_quaternion_aug(base: torch.Tensor, mode: str) -> torch.Tensor:
+    """Performs memory-efficient quaternion augmentation by randomly
+    selecting half of the quaternions in the batch with scalar part
+    smaller than 0.1 and then multiplies them by -1.
+    """
+    rep = rotmat_to_quaternion_canonical(base)
+
+    if mode == "train":
+        rep[(torch.rand(rep.size(0), device=rep.device) < 0.5) * (rep[:, 3] < 0.1)] *= -1
+
+    return rep
+
+
+def rotmat_to_gramschmidt(base: torch.Tensor, **kwargs) -> torch.Tensor:
     return base[:, :, :2]
 
 
-def rotmat_to_gramschmidt_f(base: torch.Tensor) -> torch.Tensor:
+def rotmat_to_gramschmidt_f(base: torch.Tensor, **kwargs) -> torch.Tensor:
     return base[:, :, :2].reshape(-1, 6)
 
 
-def rotmat_to_procrustes(base: torch.Tensor) -> torch.Tensor:
+def rotmat_to_procrustes(base: torch.Tensor, **kwargs) -> torch.Tensor:
     return base
 
 
-def rotmat_to_rotvec(base: torch.Tensor) -> torch.Tensor:
+def rotmat_to_rotvec(base: torch.Tensor, **kwargs) -> torch.Tensor:
     return roma.rotmat_to_rotvec(base)
+
+
+def rotmat_to_rotvec_canonical(base: torch.Tensor, **kwargs) -> torch.Tensor:
+    """WARNING: THIS FUNCTION HAS NOT BEEN TESTED"""
+    rep = roma.rotmat_to_rotvec(base)
+    rep[rep[:, 2] < 0] = (1.0 - 2.0 * pi / rep[rep[:, 2] < 0].norm(dim=1, keepdim=True)) * rep[rep[:, 2] < 0]
+    return rep
 
 
 def test_all():
     from scipy.spatial.transform import Rotation
     from torch import from_numpy as tr
     import numpy as np
+    from torch import from_numpy as tr
 
     rs = Rotation.random(1000)
     euler = rs.as_euler("XZY", degrees=False)
