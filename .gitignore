@@ -4,6 +4,8 @@ ModelNet40
 ModelNet40.zip
 *.npy
 pcd_results*
+*.png
+*.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
