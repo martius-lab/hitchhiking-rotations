@@ -8,10 +8,31 @@ import matplotlib.colors as matcolors
 import matplotlib.animation as animation
 from matplotlib.ticker import FormatStrFormatter
 import seaborn as sns
+from einops import rearrange
 
-rot = Rotation.random(1)  # generate N random rotations
-rotmat = jnp.array(rot.as_matrix()).reshape((3,3))
-predmats = jax.random.uniform(key=jax.random.PRNGKey(np.random.randint(0,10000)), shape=(3, 3), minval=-2.0, maxval=2.0)
+
+# Helper functions to rearrange 6D vectors to 3x2 matrices
+# where columns denote the representation vectors
+def mat2vec(mat, dimb=3):
+    # Same as table.T.reshape(-1, 1)
+    return rearrange(mat, "a b -> (b a)", a=3, b=dimb)
+
+
+def vec2mat(vec, dimb=3):
+    return rearrange(vec, "(b a) -> a b", a=3, b=dimb)
+
+
+# rot = Rotation.random(1)  # generate N random rotations
+# rotmat = jnp.array(rot.as_matrix()).reshape((3,3))
+rotmat = jnp.eye(3)
+predmats = jax.random.uniform(
+    key=jax.random.PRNGKey(np.random.randint(0, 10000)), shape=(3, 3), minval=-2.0, maxval=2.0
+)
+
+# predmats.at[:, 0].set(-1 * rotmat[:,0])
+# predmats.at[:, 1].set(-1 * rotmat[:,1])
+# predmats.at[:,2].set(-1 * rotmat[:,2])
+
 
 @jax.jit
 def gso(m: jnp.ndarray) -> jnp.ndarray:
@@ -25,6 +46,7 @@ def gso(m: jnp.ndarray) -> jnp.ndarray:
     yn = jnp.cross(zn, xn)
     return jnp.c_[xn, yn, zn]
 
+
 @jax.jit
 def svd(m: jnp.ndarray) -> jnp.ndarray:
     """Maps 3x3 matrices onto SO(3) via symmetric orthogonalization.
@@ -34,43 +56,58 @@ def svd(m: jnp.ndarray) -> jnp.ndarray:
     det = jnp.linalg.det(jnp.matmul(U, Vh))
     return jnp.matmul(jnp.c_[U[:, :-1], U[:, -1] * det], Vh)
 
+
 def norm(mat1: jnp.ndarray, mat2: jnp.ndarray) -> jnp.ndarray:
     return jnp.linalg.norm(mat1.flatten() - mat2.flatten())
 
+
 def norm_gso(predmat_vec, rotmat):
-    return norm(rotmat, gso(predmat_vec.reshape(3, 2)))
+    predmat_mat = vec2mat(predmat_vec, dimb=2)
+    return norm(rotmat, gso(predmat_mat))
+
 
 def norm_svd(predmat_vec, rotmat):
-    return norm(rotmat, svd(predmat_vec.reshape(3, 3)))
+    predmat_mat = vec2mat(predmat_vec)
+    return norm(rotmat, svd(predmat_mat))
+
 
 grads_gso = jax.grad(norm_gso)
 grads_svd = jax.grad(norm_svd)
 
-epochs = 300
-stepsize = 1.
+epochs = 150
+stepsize = 1.0
 
-predmats_gso, predmats_svd = predmats.reshape(9,)[:6], predmats.reshape(9,)
-predmats_gso_list, predmats_svd_list = [], []
+predmats_gso, predmats_svd = mat2vec(predmats)[:6], mat2vec(predmats)
 rotmat_gso, rotmat_svd = [], []
+predmats_gso_list, predmats_svd_list = [], []
 gradgso, gradsvd = jnp.zeros((6,)), jnp.zeros((9,))
 
-def momentum(grad, grad_prev, beta=0.9):
-    return beta * grad_prev + (1-beta) * grad
+
+def momentum(grad_current, grad_prev, beta=0.9):
+    return beta * grad_prev + (1 - beta) * grad_current
+
 
 for i in range(epochs):
-    predmats_gso_list.append(predmats_gso)
     gradgso = momentum(grads_gso(predmats_gso, rotmat), gradgso)
     predmats_gso -= stepsize * gradgso
-    rotmat_gso.append(gso(predmats_gso.reshape(3, 2)))
+    tmp1 = rearrange(predmats_gso, "(b a) -> a b", a=3, b=2)
+    rotmat_gso.append(gso(tmp1))
+    predmats_gso_list.append(predmats_gso)
 
-    predmats_svd_list.append(predmats_svd)
     gradsvd = momentum(grads_svd(predmats_svd, rotmat), gradsvd)
     predmats_svd -= stepsize * gradsvd
-    rotmat_svd.append(svd(predmats_svd.reshape(3, 3)))
+    tmp2 = rearrange(predmats_svd, "(b a) -> a b", a=3, b=3)
+    rotmat_svd.append(svd(tmp2))
+    predmats_svd_list.append(predmats_svd)
+
+predmats_gso_list = jnp.array(predmats_gso_list)
+predmats_svd_list = jnp.array(predmats_svd_list)
+
+lims = 4.0
 
 
 def plot_matrices(ax, mat_list, labels, frame):
-    ax.set(xlim=(-1.25, 1.25), ylim=(-1.25, 1.25), zlim=(-1.25, 1.25))
+    ax.set(xlim=(-0.5 * lims, lims), ylim=(-0.5 * lims, lims), zlim=(-0.5 * lims, lims))
     colors = ["r", "g", "b", "y", "m", "c"]
 
     offsetvec = jnp.zeros((3,))
@@ -80,15 +117,80 @@ def plot_matrices(ax, mat_list, labels, frame):
         for j in range(len(mat)):
             if j == 0:
                 ax.quiver(
-                    offsetvec, offsetvec, offsetvec,
-                    mat[0][j], mat[1][j], mat[2][j],
-                    color=colors[i], label=labels[i]
+                    offsetvec, offsetvec, offsetvec, mat[0][j], mat[1][j], mat[2][j], color=colors[i], label=labels[i]
                 )
             else:
-                ax.quiver(offsetvec, offsetvec, offsetvec,
-                          mat[0][j], mat[1][j], mat[2][j], color=colors[i])
+                ax.quiver(offsetvec, offsetvec, offsetvec, mat[0][j], mat[1][j], mat[2][j], color=colors[i])
 
             ax.text(mat[0][j], mat[1][j], mat[2][j], f"$e_{j + 1}$", color="black")
+
+
+fig = plt.figure(figsize=(10, 10), facecolor="w")
+ax = fig.add_subplot(111, projection="3d", facecolor="w")
+# ax.set_axis_off()
+ax.view_init(elev=5, azim=30)
+ax.dist = 3
+fig.subplots_adjust(left=0, right=1, bottom=0, top=1)  # Remove margins
+
+
+def update_plot(frame):
+    ax.clear()
+    # ax.set_axis_off()
+    plot_matrices(ax, [rotmat, rotmat_gso[frame], rotmat_svd[frame]], ["RotMat", "GSO", "SVD"], frame)
+
+    def plot_line(data, index, color="r", linestyle="-"):
+        ax.plot(data[:, index], data[:, index + 1], data[:, index + 2], lw=2, color=color, linestyle=linestyle)
+
+    plot_line(predmats_gso_list[: frame + 1], index=0, color="darkgreen")
+    plot_line(predmats_gso_list[: frame + 1], index=3, color="lightgreen")
+    plot_line(predmats_svd_list[: frame + 1], index=0, color="darkblue")
+    plot_line(predmats_svd_list[: frame + 1], index=3, color="blue")
+    plot_line(predmats_svd_list[: frame + 1], index=6, color="lightblue")
+
+    ax.plot(
+        [predmats_gso_list[frame, 0], rotmat_gso[frame][0][0]],
+        [predmats_gso_list[frame, 1], rotmat_gso[frame][1][0]],
+        [predmats_gso_list[frame, 2], rotmat_gso[frame][2][0]],
+        color="grey",
+        linestyle=":",
+    )
+    ax.plot(
+        [predmats_gso_list[frame, 3], rotmat_gso[frame][0][1]],
+        [predmats_gso_list[frame, 4], rotmat_gso[frame][1][1]],
+        [predmats_gso_list[frame, 5], rotmat_gso[frame][2][1]],
+        color="grey",
+        linestyle=":",
+    )
+
+    ax.plot(
+        [predmats_svd_list[frame, 0], rotmat_svd[frame][0][0]],
+        [predmats_svd_list[frame, 1], rotmat_svd[frame][1][0]],
+        [predmats_svd_list[frame, 2], rotmat_svd[frame][2][0]],
+        color="grey",
+        linestyle=":",
+    )
+    ax.plot(
+        [predmats_svd_list[frame, 3], rotmat_svd[frame][0][1]],
+        [predmats_svd_list[frame, 4], rotmat_svd[frame][1][1]],
+        [predmats_svd_list[frame, 5], rotmat_svd[frame][2][1]],
+        color="grey",
+        linestyle=":",
+    )
+    ax.plot(
+        [predmats_svd_list[frame, 6], rotmat_svd[frame][0][2]],
+        [predmats_svd_list[frame, 7], rotmat_svd[frame][1][2]],
+        [predmats_svd_list[frame, 8], rotmat_svd[frame][2][2]],
+        color="grey",
+        linestyle=":",
+    )
+
+    ax.plot([0, lims], [0, 0], [0, 0], color="black", linestyle="--")
+    ax.plot([0, 0], [0, lims], [0, 0], color="black", linestyle="--")
+    ax.plot([0, 0], [0, 0], [0, lims], color="black", linestyle="--")
+
+    ax.get_xaxis().set_ticklabels([])
+    ax.get_yaxis().set_ticklabels([])
+    ax.get_zaxis().set_ticklabels([])
 
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
@@ -97,14 +199,6 @@ def plot_matrices(ax, mat_list, labels, frame):
     ax.set_box_aspect([1, 1, 1])
     ax.legend()
 
-fig = plt.figure(figsize=(10, 10))
-ax = fig.add_subplot(111, projection='3d')
-#ax.set_axis_off()
-
-def update_plot(frame):
-    ax.clear()
-    #ax.set_axis_off()
-    plot_matrices(ax, [rotmat, rotmat_gso[frame], rotmat_svd[frame]], ["RotMat", "GSO", "SVD"], frame)
 
 # Create animation
 ani = animation.FuncAnimation(fig, update_plot, frames=len(rotmat_gso), interval=10)
@@ -112,4 +206,4 @@ ani = animation.FuncAnimation(fig, update_plot, frames=len(rotmat_gso), interval
 plt.show()
 
 save_path = os.path.join(os.getcwd(), "gso_vs_svd.gif")
-ani.save(save_path, writer="ffmpeg", fps=60)
+ani.save(save_path, writer="ffmpeg", fps=10)
