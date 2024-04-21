@@ -10,6 +10,9 @@ from matplotlib.ticker import FormatStrFormatter
 import seaborn as sns
 from einops import rearrange
 
+epochs = 300
+stepsize = 1.0
+
 
 # Helper functions to rearrange 6D vectors to 3x2 matrices
 # where columns denote the representation vectors
@@ -29,9 +32,32 @@ predmats = jax.random.uniform(
     key=jax.random.PRNGKey(np.random.randint(0, 10000)), shape=(3, 3), minval=-2.0, maxval=2.0
 )
 
-# predmats.at[:, 0].set(-1 * rotmat[:,0])
-# predmats.at[:, 1].set(-1 * rotmat[:,1])
-# predmats.at[:,2].set(-1 * rotmat[:,2])
+if False:
+    # Set representation vectors close to -e_3
+    predmats = predmats.at[:, 0].set(-1 * rotmat[:, 2] + 0.01)
+    predmats = predmats.at[:, 1].set(-1 * rotmat[:, 2] + 0.02)
+    predmats = predmats.at[:, 2].set(-1 * rotmat[:, 2])
+
+if False:
+    # Set representation vectors close to -e_2
+    predmats = predmats.at[:, 0].set(-1 * rotmat[:, 0] + 0.01)
+    predmats = predmats.at[:, 1].set(-1 * rotmat[:, 0] + 0.02)
+    predmats = predmats.at[:, 2].set(-1 * rotmat[:, 0])
+
+if False:
+    # Left handed coordinate system breaks SVD
+    predmats = predmats.at[:, 0].set(-1 * rotmat[:, 0])
+    predmats = predmats.at[:, 1].set(-1 * rotmat[:, 1])
+    predmats = predmats.at[:, 2].set(-1 * rotmat[:, 2])
+
+if False:
+    # Large ratios between feature vectors
+    predmats = predmats.at[:, 0].set(-3 * rotmat[:, 0] + 0.01)
+    predmats = predmats.at[:, 1].set(-0.001 * rotmat[:, 1])
+    predmats = predmats.at[:, 2].set(1 * rotmat[:, 2])
+
+if False:
+    predmats = predmats.at[:, 1].set(predmats[:, 0])
 
 
 @jax.jit
@@ -74,12 +100,11 @@ def norm_svd(predmat_vec, rotmat):
 grads_gso = jax.grad(norm_gso)
 grads_svd = jax.grad(norm_svd)
 
-epochs = 150
-stepsize = 1.0
-
 predmats_gso, predmats_svd = mat2vec(predmats)[:6], mat2vec(predmats)
-rotmat_gso, rotmat_svd = [], []
 predmats_gso_list, predmats_svd_list = [], []
+predmats_gso_list.append(predmats_gso)
+predmats_svd_list.append(predmats_svd)
+rotmat_gso, rotmat_svd = [], []
 gradgso, gradsvd = jnp.zeros((6,)), jnp.zeros((9,))
 
 

@@ -16,7 +16,7 @@ import seaborn as sns
 # import lovely_jax as lj
 # lj.monkey_patch()
 
-N = int(1e3)  # Number of randomly sampled rotations and predicted matrices
+N = int(1e3)  # Number of randomly sampled representation vectors
 plot_frames = False  # Plot frames before/after SVD/GSO transform
 plot_frames_with_grads = False
 plot_grads = False  # Plot ratio between gradients entries
@@ -26,29 +26,30 @@ plot_condnums = False  # Plot condition numbers of Hessian matrices and max eige
 
 # Helper functions to rearrange 6D vectors to 3x2 matrices
 # where columns denote the representation vectors
-def mat2vec(mat, dimb=3):
+def mat2vec(mat: jnp.ndarray, dimb=3) -> jnp.ndarray:
     # Same as table.T.reshape(-1, 1)
     return rearrange(mat, "a b -> (b a)", a=3, b=dimb)
 
 
-def vec2mat(vec, dimb=3):
+def vec2mat(vec: jnp.ndarray, dimb=3) -> jnp.ndarray:
     return rearrange(vec, "(b a) -> a b", a=3, b=dimb)
 
 
-def bmat2bvec(mat, dimb=3):
+def bmat2bvec(mat: jnp.ndarray, dimb=3) -> jnp.ndarray:
     return rearrange(mat, "i a b -> i (b a)", a=3, b=dimb)
 
 
-def bvec2bmat(vec, dimb=3):
+def bvec2bmat(vec: jnp.ndarray, dimb=3) -> jnp.ndarray:
     return rearrange(vec, "i (b a) -> i a b", a=3, b=dimb)
 
 
-rot = Rotation.random(N)  # generate N random rotations
-rotmats = jnp.array(rot.as_matrix())
+# rot = Rotation.random(N)  # generate N random rotations
+# rotmats = jnp.array(rot.as_matrix())
+rotmats = jnp.tile(jnp.eye(3), (N, 1, 1))
 rotmats_vec = bmat2bvec(rotmats)
 
-# predmats = rotmats + 1e-1 * jax.random.normal(key=jax.random.PRNGKey(42), shape=(N, 3, 3))
-predmats = jax.random.uniform(key=jax.random.PRNGKey(42), shape=(N, 3, 3), minval=-2.0, maxval=2.0)
+predmats = rotmats + 1e-1 * jax.random.normal(key=jax.random.PRNGKey(42), shape=(N, 3, 3))
+# predmats = jax.random.uniform(key=jax.random.PRNGKey(42), shape=(N, 3, 3), minval=-2.0, maxval=2.0)
 # predmats = 2*jax.random.normal(key=jax.random.PRNGKey(1), shape=(N, 3, 3))
 predmats_vec = bmat2bvec(predmats)
 
@@ -164,11 +165,11 @@ def norm(mat1: jnp.ndarray, mat2: jnp.ndarray) -> jnp.ndarray:
     return jnp.linalg.norm(mat1.flatten() - mat2.flatten())
 
 
-def norm_gso(predmat_vec, rotmat):
+def norm_gso(predmat_vec: jnp.ndarray, rotmat: jnp.ndarray) -> jnp.ndarray:
     return norm(rotmat, gso(vec2mat(predmat_vec, dimb=2)))
 
 
-def norm_svd(predmat_vec, rotmat):
+def norm_svd(predmat_vec: jnp.ndarray, rotmat: jnp.ndarray) -> jnp.ndarray:
     return norm(rotmat, svd(vec2mat(predmat_vec)))
 
 
@@ -230,7 +231,6 @@ hessmats_svd = jax.vmap(hess_svd, (0, 0))(rotmats, predmats_vec)
 
 eig_gso = jnp.sort(jax.vmap(jnp.linalg.eig)(hessmats_gso)[0], axis=-1)
 eig_svd = jnp.sort(jax.vmap(jnp.linalg.eig)(hessmats_svd)[0], axis=-1)
-
 condnums_gso = jnp.divide(jnp.abs(eig_gso[:, -1]), jnp.abs(eig_gso[:, 0]))
 condnums_svd = jnp.divide(jnp.abs(eig_svd[:, -1]), jnp.abs(eig_svd[:, 0]))
 
@@ -256,16 +256,22 @@ df = pd.DataFrame(
 df["Label"] = ["SVD"] * rot_svd.shape[0] + ["GSO"] * rot_gso.shape[0]
 
 
-def boxplot_labels(labels):
+def boxplot_labels(labels, labeltext=None):
     fig, axs = plt.subplots(1, len(labels), sharey=True)
     for i in range(len(labels)):
         # sns.histplot(data=df, x=labels[i], hue="Label", bins=50, ax=axs[i])
-        sns.boxplot(x="Label", y=labels[i], data=df, ax=axs[i], showfliers=True)
+        sns.boxplot(x="Label", y=labels[i], data=df, ax=axs[i], showfliers=True, palette="Blues")
         # sns.violinplot(x="Label", y=labels[i], data=df, ax=axs[i])
-        axs[i].set_xlabel(labels[i])
+        # sns.stripplot(x="Label", y=labels[i], data=df, ax=axs[i], color="black", alpha=0.01)
         axs[i].set_yscale("log")
+        axs[i].tick_params(labelsize=18)
 
-    axs[0].set_ylabel("Count")
+        if labeltext is not None:
+            axs[i].set_xlabel(labeltext[i], fontsize=18)
+        else:
+            axs[i].set_xlabel(labels[i], fontsize=18)
+
+    axs[0].set_ylabel("Count", fontsize=18)
     plt.tight_layout()
     plt.show()
 
@@ -328,7 +334,7 @@ def plot_2D_paper():
     labels = ["GSO", "SVD", "SVD", "SVD"]
     dataname = ["ratios12", "ratios12", "ratios13", "ratios23"]
     datalabels = [
-        r"$\|\nabla_{v_1}L\| / \|\nabla_{v_2}L\|$",
+        r"$\|\nabla_{\nu_1}L\| / \|\nabla_{\nu_2}L\|$",
         r"$\|\nabla_{m_1}L\| / \|\nabla_{m_2}L\|$",
         r"$\|\nabla_{m_1}L\| / \|\nabla_{m_3}L\|$",
         r"$\|\nabla_{m_2}L\| / \|\nabla_{m_3}L\|$",
@@ -357,8 +363,8 @@ def plot_2D_paper():
         for c in cnt.collections:
             c.set_edgecolor("face")
 
-        # axs[i].set_ylim(0.08, 20)
-        axs[i].set_xlabel("L2 loss")
+        axs[i].set_ylim(0.06, 120)
+        axs[i].set_xlabel(r"Loss $L(R,r)$")
         axs[i].set_ylabel(None)
         axs[i].set_title(datalabels[i])
         plt.text(0.02, 0.98, labels[i], ha="left", va="top", fontsize=14, color="black", transform=axs[i].transAxes)
@@ -380,4 +386,9 @@ if plot_grads:
     boxplot_labels(["ratios12", "ratios13", "ratios23"])
 
 if plot_condnums:
-    boxplot_labels(["condnums", "eigmax"])
+    # \mathrm{abs}(\lambda_{\mathrm{max}}) \mathrm{abs}(\lambda_{\mathrm{min}}})
+    labeltext = [
+        r"Condition number $\mathrm{abs}(\lambda_{\mathrm{max}}) / \mathrm{abs}(\lambda_{\mathrm{min}}) $",
+        r"Maximal eigenvalue $\lambda_{\mathrm{max}}$",
+    ]
+    boxplot_labels(["condnums", "eigmax"], labeltext=labeltext)
