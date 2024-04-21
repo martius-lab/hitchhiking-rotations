@@ -12,7 +12,7 @@ p = os.path.join(HITCHHIKING_ROOT_DIR, "scripts", "train.py")
 for seed in range(10):
     os.system(f"python3 {p} --experiment {exp} --seed {seed}")
 if exp in exps[:2]:
-    os.system("python3 " + str(os.path.join(HITCHHIKING_ROOT_DIR, "visu", "figure_19.py ")+ exp))
+    os.system("python3 " + str(os.path.join(HITCHHIKING_ROOT_DIR, "visu", "figure_19.py ") + exp))
     os.system("python3 " + str(os.path.join(HITCHHIKING_ROOT_DIR, "visu", "figure_12a.py ") + exp))
 else:
     os.system("python3 " + str(os.path.join(HITCHHIKING_ROOT_DIR, "visu", "figure_12b.py")))
