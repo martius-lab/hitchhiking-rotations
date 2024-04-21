@@ -5,7 +5,7 @@
 </h1>
 
 <h4 align="center">
-Code for ICML 2024: <a href="some_ariv_link" target="_blank">"Position Paper: Learning with 3D rotations, a hitchhiker’s guide to SO(3)"</a>.</h4>
+Code for the paper: <a href="some_ariv_link" target="_blank">"Learning with 3D rotations, a hitchhiker’s guide to SO(3)"</a>.</h4>
 
 <p align="center">
   <a href="#overview">Overview</a> •
