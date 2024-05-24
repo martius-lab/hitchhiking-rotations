@@ -55,9 +55,9 @@ pip3 install torch torchvision torchaudio
 # Experiments
 
 <p float="center">
-  <img src="/assets/docs/gso_vs_svd1.gif" width="200" />
-  <img src="/assets/docs/gso_vs_svd2.gif" width="200" /> 
-  <img src="/assets/docs/gso_vs_svd3.gif" width="200" />
+  <img src="/assets/docs/gso_vs_svd1.gif" width="350" />
+  <img src="/assets/docs/gso_vs_svd2.gif" width="350" /> 
+  <img src="/assets/docs/gso_vs_svd3.gif" width="350" />
 </p>
 
 All experiments are implemented in PyTorch. 
@@ -115,10 +115,11 @@ To reproduce the paper's figures, run the following commands:
 | Experiment 3                       | `python visu/figure_posenet.py`       |
 | Experiment 4                       | `python visu/figure_fourier.py`       |
 | Figure 6 & 20: Lipschitz constants | `python visu/lipschitz_constants.py`  |
-| Figure 19: MoCap data analysis     | `python visu/figure_mocap.py`         |
-| Figure 17: Loss gradients          | `python visu/loss_gradients.py`       |
 | Figure 10: Training GSO & SVD      | `python visu/gso_vs_svd_animation.py` |
 | Figure 11: Gradient ratios of SVD  | `python visu/gso_vs_svd.py`           |
+| Figure 18: Loss gradients          | `python visu/loss_gradients.py`       |
+| Figure 19: MoCap data analysis     | `python visu/figure_mocap.py`         |
+
 
 # Development
 ### Code Formatting
