@@ -6,13 +6,13 @@
 
 <h4 align="center">
 Code for the paper: <a href="https://arxiv.org/abs/2404.11735" target="_blank">"Learning with 3D rotations, a hitchhiker’s guide to SO(3)"</a></h4>
+<h6 align="center">A. René Geist, Jonas Frey, Mikel Zhobro, Anna Levina, and Georg Martius</h6>
 
 <p align="center">
   <a href="#overview">Overview</a> •
   <a href="#installation">Installation</a> •
   <a href="#experiments">Experiments</a> •
-  <a href="#development">Development</a> •
-  <a href="#credits">Credits</a>
+  <a href="#development">Development</a>
 </p>
 
 
