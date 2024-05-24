@@ -83,7 +83,7 @@ print("WARNING: Tick labels are hardcoded!")
 plt.xticks([0.3, 0.4, 0.5, 0.6], ["0.3", "0.4", "0.5", "0.6"])
 
 plt.tight_layout()
-out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", exp, "figure_12a.pdf")
+out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", exp, "figure_exp2a.pdf")
 
 plt.savefig(out_p)
 plt.show()

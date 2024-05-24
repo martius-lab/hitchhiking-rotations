@@ -53,6 +53,13 @@ pip3 install torch torchvision torchaudio
 ```
 
 # Experiments
+
+<p float="center">
+  <img src="/assets/docs/gso_vs_svd1.gif" width="200" />
+  <img src="/assets/docs/gso_vs_svd2.gif" width="200" /> 
+  <img src="/assets/docs/gso_vs_svd3.gif" width="200" />
+</p>
+
 All experiments are implemented in PyTorch. 
 Most experiments simply use [train.py](scripts/train.py).
 Depending on which command line arguments are passed (see below), 
@@ -72,7 +79,7 @@ learning results that have been stored using [logger.py](hitchhiking_rotations/u
 To reproduce the paper's experiments, download the data, and save it in the `assets/datasets` folder.
 
 > [!NOTE]  
-> The data is available here: [link](PUT-LINK-HERE)
+> The data is available here: [link](https://drive.google.com/drive/folders/1D1FNeKBuFYC2BHxFWgzfm-cj2K3rVhnr?usp=sharing)
 
 
 ### Experiment 1, 2.1, and 2.2
@@ -100,16 +107,18 @@ for nb in {1..5}; do for seed in {1..20}; do python scripts/train.py --seed $see
 
 To reproduce the paper's figures, run the following commands:
 
-| **Figures**                        | **Console command**                  |
-|------------------------------------|--------------------------------------|
-| Experiment 1                       | TBD                                  |
-| Experiment 2.1                     | `python visu/figure12a.py`           |
-| Experiment 2.2                     | `python visu/figure12b.py`           |
-| Experiment 3                       | TBD                                  |
-| Experiment 4                       | `python visu/figure14.py`            |
-| Figure 6 & 18: Lipschitz constants | `python visu/lipschitz_constants.py` |
-| Figure 16: MoCap data analysis     | TBD                                  |
-| Figure 17: Loss gradients          | `python visu/loss_gradients.py`      |
+| **Figures**                        | **Console command**                   |
+|------------------------------------|---------------------------------------|
+| Experiment 1                       | `python visu/figure_pointcloud.py`    |
+| Experiment 2.1                     | `python visu/figure_exp2a.py`         |
+| Experiment 2.2                     | `python visu/figure_exp2b.py`         |
+| Experiment 3                       | `python visu/figure_posenet.py`       |
+| Experiment 4                       | `python visu/figure_fourier.py`       |
+| Figure 6 & 20: Lipschitz constants | `python visu/lipschitz_constants.py`  |
+| Figure 19: MoCap data analysis     | `python visu/figure_mocap.py`         |
+| Figure 17: Loss gradients          | `python visu/loss_gradients.py`       |
+| Figure 10: Training GSO & SVD      | `python visu/gso_vs_svd_animation.py` |
+| Figure 11: Gradient ratios of SVD  | `python visu/gso_vs_svd.py`           |
 
 # Development
 ### Code Formatting
@@ -130,5 +139,3 @@ pip3 install addheader
 addheader hitchhiking_rotations -t .header.txt -p \*.py --sep-len 79 --comment='#' --sep=' '
 ```
 
-# Credits
-TBD

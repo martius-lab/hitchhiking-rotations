@@ -102,6 +102,6 @@ g.set(xlabel=r"Number of fourier basis functions $n_b$", ylabel="MSE")
 plt.yscale("log")
 plt.tight_layout()
 
-out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", "figure_14.pdf")
+out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", "figure_fourier.pdf")
 plt.savefig(out_p)
 plt.show()

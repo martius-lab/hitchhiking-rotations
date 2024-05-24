@@ -7,6 +7,7 @@ def get_cfg_cube_image_to_pose(device):
     shared_trainer_cfg = {
         "_target_": "hitchhiking_rotations.utils.Trainer",
         "lr": 0.001,
+        "patience": 10,
         "optimizer": "Adam",
         "logger": "${logger}",
         "verbose": "${verbose}",

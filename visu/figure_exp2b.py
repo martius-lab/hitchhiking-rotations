@@ -73,6 +73,6 @@ print("WARNING: Tick labels are hardcoded!")
 plt.xticks([0.0005, 0.001, 0.002, 0.004], [r"$5\cdot10^{-4}$", r"$10^{-3}$", r"$2\cdot10^{-3}$", r"$4\cdot10^{-3}$"])
 
 plt.tight_layout()
-out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", "pose_to_cube_image", "figure_12b.pdf")
+out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", "pose_to_cube_image", "figure_exp2b.pdf")
 plt.savefig(out_p)
 plt.show()
