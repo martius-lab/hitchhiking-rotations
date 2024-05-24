@@ -55,9 +55,8 @@ pip3 install torch torchvision torchaudio
 # Experiments
 
 <p float="center">
-  <img src="/assets/docs/gso_vs_svd1.gif" width="350" />
-  <img src="/assets/docs/gso_vs_svd2.gif" width="350" /> 
-  <img src="/assets/docs/gso_vs_svd3.gif" width="350" />
+  <img src="/assets/docs/gso_vs_svd1.gif" width="400" />
+  <img src="/assets/docs/gso_vs_svd3.gif" width="400" />
 </p>
 
 All experiments are implemented in PyTorch. 
