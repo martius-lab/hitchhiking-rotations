@@ -113,5 +113,5 @@ plt.ylabel("Score")
 plt.grid(True, linestyle="--", color="gray", alpha=0.5)
 
 plt.tight_layout()
-plt.savefig(os.path.join(HITCHHIKING_ROOT_DIR, "results", "dense_fusion", "figure_13.pdf"))
+plt.savefig(os.path.join(HITCHHIKING_ROOT_DIR, "results", "dense_fusion", "figure_posenet.pdf"))
 plt.show()

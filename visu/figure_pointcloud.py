@@ -120,7 +120,7 @@ for j, selected_metric in enumerate(["geodesic_distance", "chordal_distance"]):
     # plt.xscale("log")
     plt.tight_layout()
 
-out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", exp, f"figure_19_combined.pdf")
+out_p = os.path.join(HITCHHIKING_ROOT_DIR, "results", exp, f"figure_pointcloud_combined.pdf")
 
 plt.savefig(out_p)
 
