@@ -24,7 +24,7 @@ setup(
     author_email="jonfrey@ethz.ch",
     packages=find_packages(),
     python_requires=">=3.7",
-    description="Code for: Position Paper: Learning with 3D rotations, a hitchhiker’s guide to SO(3)",
+    description="Code for: Learning with 3D rotations, a hitchhiker’s guide to SO(3)",
     install_requires=[INSTALL_REQUIRES],
     dependencies=[],
     dependency_links=[],
