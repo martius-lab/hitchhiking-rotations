@@ -95,7 +95,7 @@ python scripts/train.py --experiment <EXPERIMENT-NAME>
 
 ### Experiment 3: 6D object pose estimation
 
-Experiment 3 has its own [repository](PUT-LINK-HERE).
+Experiment 3 has its own [repository](https://github.com/JonasFrey96/DenseFusion/tree/pose_estimation_example).
 
 ### Experiment 4: SO(3) as input to Fourier series
 ```console
