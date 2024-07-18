@@ -59,7 +59,7 @@ pip3 install torch torchvision torchaudio
   <img src="/assets/docs/gso_vs_svd3.gif" width="400" />
 </p>
 
-All experiments are implemented in PyTorch. 
+All experiments are implemented in PyTorch. A few scripts used to create figures use JAX.
 Most experiments simply use [train.py](scripts/train.py).
 Depending on which command line arguments are passed (see below), 
 [train.py](scripts/train.py) runs different neural network regression tasks via [hydra](https://hydra.cc/).
