@@ -35,7 +35,7 @@ While the *choice of loss function* is important for learning with rotations, we
 
 - **For rotation estimation (rotations in model output)** use $\mathbb{R}^9+\mathrm{SVD}$ or $\mathbb{R}^6+\mathrm{GSO}$. If the regression targets are only small rotations, using quaternions with a halfspace-map is a good option.
 
-- **For feature prediction (rotations in model input)** use $\mathbb{R}^9+\mathrm{SVD}$ or $\mathbb{R}^6+\mathrm{GSO}$. If under memory constraints, quaternions with a halfspace-map and data-augmentation are viable.
+- **For feature prediction (rotations in model input)** use rotation matrices. If under memory constraints, quaternions with a halfspace-map and data-augmentation are viable.
 
 > [!NOTE]  
 > To support these recommendations, we conducted several experiments and reproduced the results of previous works.
