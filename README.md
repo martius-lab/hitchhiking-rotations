@@ -1,3 +1,6 @@
+ [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+ [![Downloads](https://static.pepy.tech/badge/deprl)](https://pepy.tech/project/deprl)
+ 
 <h1 align="center">
   <br>
   Hitchhiking Rotations
@@ -12,7 +15,8 @@ Code for <a href="https://proceedings.mlr.press/v235/geist24a.html" target="_bla
   <a href="#overview">Overview</a> •
   <a href="#installation">Installation</a> •
   <a href="#experiments">Experiments</a> •
-  <a href="#development">Development</a>
+  <a href="#development">Development</a> •
+  <a href="#development">BibTex</a>
 </p>
 
 
@@ -59,7 +63,7 @@ pip3 install torch torchvision torchaudio
   <img src="/assets/docs/gso_vs_svd3.gif" width="400" />
 </p>
 
-All experiments are implemented in PyTorch. A few scripts used to create figures use JAX.
+All experiments are implemented in PyTorch using [Roma](https://github.com/naver/roma). A few scripts used to create figures use JAX.
 Most experiments simply use [train.py](scripts/train.py).
 Depending on which command line arguments are passed (see below), 
 [train.py](scripts/train.py) runs different neural network regression tasks via [hydra](https://hydra.cc/).
@@ -130,8 +134,8 @@ cd hitchhiking_rotations && black --line-length 120 ./
 pip3 install pre-commit
 cd hitchhiking_rotations && python3 -m pre_commit install
 cd hitchhiking_rotations && python3 -m pre_commit run
-
 ```
+
 ### Add License Headers
 ```shell
 pip3 install addheader
@@ -139,3 +143,17 @@ pip3 install addheader
 addheader hitchhiking_rotations -t .header.txt -p \*.py --sep-len 79 --comment='#' --sep=' '
 ```
 
+## BibTex
+```
+@InProceedings{geist2023rotations,  
+title = {Learning with 3{D} rotations, a hitchhiker’s guide to {SO}(3)},  
+author = {Geist, Andreas Ren\'{e} and Frey, Jonas and Zhobro, Mikel and Levina, Anna and Martius, Georg},  
+booktitle =  {Proceedings of the 41st International Conference on Machine Learning},  
+pages =  {15331--15350},
+year =  {2024},  
+volume =  {235},
+series =  {Proceedings of Machine Learning Research},  
+month =  {21--27 Jul},  
+publisher =    {PMLR},
+}
+```
