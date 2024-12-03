@@ -1,12 +1,11 @@
- [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
- [![Downloads](https://static.pepy.tech/badge/deprl)](https://pepy.tech/project/deprl)
- 
 <h1 align="center">
   <br>
   Hitchhiking Rotations
   <br>
 </h1>
-
+ [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+ [![Downloads](https://static.pepy.tech/badge/deprl)](https://pepy.tech/project/deprl)
+ 
 <h4 align="center">
 Code for <a href="https://proceedings.mlr.press/v235/geist24a.html" target="_blank">"Learning with 3D rotations, a hitchhiker’s guide to SO(3)"</a></h4>
 <h6 align="center">A. René Geist, Jonas Frey, Mikel Zhobro, Anna Levina, and Georg Martius</h6>
