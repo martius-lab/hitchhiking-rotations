@@ -47,9 +47,6 @@ While the *choice of loss function* is important for learning with rotations, we
 > follow the instructions in [Experiments](#experiments).
 
 # Installation
-(virtual environment or just list of dependencies) 
-(using git lsf to get datasets and our checkpoints/models)
-
 ```shell
 git clone git@github.com:martius-lab/hitchhiking-rotations.git
 pip3 install -e ./
@@ -143,7 +140,7 @@ pip3 install addheader
 addheader hitchhiking_rotations -t .header.txt -p \*.py --sep-len 79 --comment='#' --sep=' '
 ```
 
-## BibTex
+# BibTex
 ```
 @InProceedings{geist2023rotations,  
 title = {Learning with 3{D} rotations, a hitchhiker’s guide to {SO}(3)},  
