@@ -1,5 +1,3 @@
-[![Downloads](https://static.pepy.tech/badge/deprl)](https://pepy.tech/project/deprl)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <h1 align="center">
   <br>
   Hitchhiking Rotations
