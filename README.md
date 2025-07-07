@@ -12,7 +12,6 @@ Code for <a href="https://proceedings.mlr.press/v235/geist24a.html" target="_bla
   <a href="#overview">Overview</a> •
   <a href="#installation">Installation</a> •
   <a href="#experiments">Experiments</a> •
-  <a href="#development">Development</a> •
   <a href="#development">BibTex</a>
 </p>
 
