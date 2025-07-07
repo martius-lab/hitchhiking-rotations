@@ -117,26 +117,6 @@ To reproduce the paper's figures, run the following commands:
 | Figure 18: Loss gradients          | `python visu/loss_gradients.py`       |
 | Figure 19: MoCap data analysis     | `python visu/figure_mocap.py`         |
 
-
-# Development
-### Code Formatting
-```shell
-pip3 install black==23.10
-cd hitchhiking_rotations && black --line-length 120 ./
-
-# Using precommit
-pip3 install pre-commit
-cd hitchhiking_rotations && python3 -m pre_commit install
-cd hitchhiking_rotations && python3 -m pre_commit run
-```
-
-### Add License Headers
-```shell
-pip3 install addheader
-# If your are using zsh otherwise remove \
-addheader hitchhiking_rotations -t .header.txt -p \*.py --sep-len 79 --comment='#' --sep=' '
-```
-
 # BibTex
 ```
 @InProceedings{geist2023rotations,  
