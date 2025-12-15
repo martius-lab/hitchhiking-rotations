@@ -37,11 +37,6 @@ While the *choice of loss function* is important for learning with rotations, we
 
 - **For feature prediction (rotations in model input)** use rotation matrices. If under memory constraints, quaternions with a halfspace-map and data-augmentation are viable.
 
-> [!NOTE]  
-> To support these recommendations, we conducted several experiments and reproduced the results of previous works.
-> To reproduce the paper's results, setup the environment as detailed in [Installation](#installation) and
-> follow the instructions in [Experiments](#experiments).
-
 # Installation
 ```shell
 git clone git@github.com:martius-lab/hitchhiking-rotations.git
@@ -118,7 +113,7 @@ To reproduce the paper's figures, run the following commands:
 
 # BibTex
 ```
-@InProceedings{geist2023rotations,  
+@InProceedings{geist2024rotations,  
 title = {Learning with 3{D} rotations, a hitchhiker’s guide to {SO}(3)},  
 author = {Geist, Andreas Ren\'{e} and Frey, Jonas and Zhobro, Mikel and Levina, Anna and Martius, Georg},  
 booktitle =  {Proceedings of the 41st International Conference on Machine Learning},  
