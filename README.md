@@ -37,6 +37,9 @@ While the *choice of loss function* is important for learning with rotations, we
 
 - **For feature prediction (rotations in model input)** use rotation matrices. If under memory constraints, quaternions with a halfspace-map and data-augmentation are viable.
 
+> [!NOTE]  
+> Recent work ([Choy 2026](https://arxiv.org/pdf/2604.05414), [Gu et al. 2024](https://arxiv.org/pdf/2312.00462)) shows that removing orthogonalization during training **(instead of GSO/SVD do direct 9D regression)** and applying SVD orthogonolization only at inference time improves rotation estimation in deep learning.
+
 # Installation
 ```shell
 git clone git@github.com:martius-lab/hitchhiking-rotations.git
